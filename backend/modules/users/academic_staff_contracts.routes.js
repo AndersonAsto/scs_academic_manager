@@ -1,0 +1,9 @@
+const express = require('express');
+const router = express.Router();
+const academicStaffContractsController = require('./academic_staff_contracts.controller');
+
+router.get('/academic-staff-contracts/list', academicStaffContractsController.getAcademicStaffContracts);
+router.put('/academic-staff-contracts/update/:id', academicStaffContractsController.updateAcademicStaffContract);
+router.delete('/academic-staff-contracts/delete/:id/:del', academicStaffContractsController.deleteAcadmeicStaffContract);
+
+module.exports = router;
