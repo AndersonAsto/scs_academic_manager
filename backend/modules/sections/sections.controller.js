@@ -20,7 +20,7 @@ exports.getSections = async (req, res) => {
     try {
         const query = sectionQuery(
             {},
-            [['section', 'DESC']]
+            [['section', 'ASC']]
         );
 
         const sections = await sectionModel.findAll(query);

@@ -58,6 +58,31 @@ exports.createTeachingBlocks = async (req, res) => {
     }
 }
 
+exports.updateTeachingBlock = async (req, res) => {
+    const { id } = req.params;
+    const { start_day, end_day, description } = req.body;
+
+    try {
+        const uTeachingBlock = await teachingBlocksModel.findByPk(id);
+
+        if (!uTeachingBlock) return res.status(404).json({ message: 'Bloque lectivo no encontrado.' });
+
+        uTeachingBlock.start_day= start_day;
+        uTeachingBlock.end_day = end_day;
+        uTeachingBlock.description = description;
+
+        await uTeachingBlock.save();
+
+        return res.status(201).json({
+            message: 'Bloque lectivo actualizado correctamente.',
+            data: uTeachingBlock
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+}
+
 exports.getTeachingBlocks = async (req, res) => {
     try {
         const query = teachingBlocksQuery(

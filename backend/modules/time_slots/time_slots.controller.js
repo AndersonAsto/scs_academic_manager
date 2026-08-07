@@ -23,6 +23,7 @@ exports.getTimeSlots = async (req, res) => {
 
         return res.status(200).json({
             message: timeSlots === 0 ? 'Aún no hay franjas horarias registradas en el sistema.' : null,
+            length: timeSlots.length,
             data: timeSlots
         });
     } catch (error) {
@@ -36,7 +37,7 @@ exports.updateTimeSlot = async (req, res) => {
     const { time_slot, start_time, end_time, type, description } = req.body;
 
     try {
-        const uTimeSlot = await gradesModel.findByPk(id);
+        const uTimeSlot = await timeSlotsModel.findByPk(id);
 
         if (!uTimeSlot) return res.status(404).json({ message: 'Franja horaria no encontrada.' });
 

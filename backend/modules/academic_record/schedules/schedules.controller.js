@@ -18,6 +18,32 @@ exports.createSchedule = async (req, res) => {
     }
 }
 
+exports.updateSchedule = async (req, res) => {
+    const { id } = req.params;
+    const { teacher_group_id, time_slot_id, day, description } = req.body;
+
+    try {
+        const uSchedules = await schedulesModel.findByPk(id);
+
+        if (!uSchedules) return res.status(404).json({ message: 'Horario no encontrado.' });
+
+        uSchedules.teacher_group_id = teacher_group_id;
+        uSchedules.time_slot_id = time_slot_id;
+        uSchedules.day = day;
+        uSchedules.description = description;
+
+        await uSchedules.save();
+
+        return res.status(201).json({
+            message: 'Horario actualizado correctamente.',
+            data: uSchedules
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+}
+
 exports.getSchedules = async (req, res) => {
     try {
         const { teacher_group_id, time_slot_id, day } = req.query;
@@ -45,33 +71,6 @@ exports.getSchedules = async (req, res) => {
     }
 }
 
-exports.updateSchedule = async (req, res) => {
-    const { id } = req.params;
-    const { teacher_group_id, time_slot_id, day, description } = req.body;
-
-    try {
-        const uSchedules = await schedulesModel.findByPk(id);
-
-        if (uSchedules) return res.status(404).json({ message: 'Horario no encontrado.' });
-
-        uSchedules.academic_staff_contract_id = academic_staff_contract_id;
-        uSchedules.course_id = course_id;
-        uSchedules.grade_id = grade_id;
-        uSchedules.section_id = section_id;
-        uSchedules.tutor = tutor;
-        uSchedules.description = description;
-
-        await uSchedules.save();
-
-        return res.status(201).json({
-            message: 'Horario actualizado correctamente.',
-            data: uSchedules
-        });
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
-    }
-}
 
 exports.deleteSchedule = async (req, res) => {
     try {

@@ -18,6 +18,34 @@ exports.createTeachersGroup = async (req, res) => {
     }
 }
 
+exports.updateTeacherGroup = async (req, res) => {
+    const { id } = req.params;
+    const { academic_staff_contract_id, course_id, grade_id, section_id, tutor, description } = req.body;
+
+    try {
+        const uTeacherGroup = await teacherGroupsModel.findByPk(id);
+
+        if (!uTeacherGroup) return res.status(404).json({ message: 'Grupo de docente no encontrado.' });
+
+        uTeacherGroup.academic_staff_contract_id = academic_staff_contract_id;
+        uTeacherGroup.course_id = course_id;
+        uTeacherGroup.grade_id = grade_id;
+        uTeacherGroup.section_id = section_id;
+        uTeacherGroup.tutor = tutor;
+        uTeacherGroup.description = description;
+
+        await uTeacherGroup.save();
+
+        return res.status(201).json({
+            message: 'Grupo de docente actualizado correctamente.',
+            data: uTeacherGroup
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+}
+
 exports.getTeacherGroups = async (req, res) => {
     try {
         const { academic_staff_contract_id, course_id, grade_id, section_id, tutor } = req.query;
@@ -40,34 +68,6 @@ exports.getTeacherGroups = async (req, res) => {
             message: teacherGroups.length === 0 ? 'Aún no hay grupos de docentes registrados en el sistema.' : null,
             length: teacherGroups.length,
             data: teacherGroups
-        });
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
-    }
-}
-
-exports.updateTeacherGroup = async (req, res) => {
-    const { id } = req.params;
-    const { academic_staff_contract_id, course_id, grade_id, section_id, tutor, description } = req.body;
-
-    try {
-        const uTeacherGroup = await teacherGroupsModel.findByPk(id);
-
-        if (uTeacherGroup) return res.status(404).json({ message: 'Grupo de docente no encontrado.' });
-
-        uTeacherGroup.academic_staff_contract_id = academic_staff_contract_id;
-        uTeacherGroup.course_id = course_id;
-        uTeacherGroup.grade_id = grade_id;
-        uTeacherGroup.section_id = section_id;
-        uTeacherGroup.tutor = tutor;
-        uTeacherGroup.description = description;
-
-        await uTeacherGroup.save();
-
-        return res.status(201).json({
-            message: 'Grupo de docente actualizado correctamente.',
-            data: uTeacherGroup
         });
     } catch (error) {
         console.error(error.message);

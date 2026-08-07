@@ -4,6 +4,7 @@ const teachingBlocksController = require('./teachingBlocks.controller');
 
 router.post('/teaching-blocks/create', teachingBlocksController.createTeachingBlocks);
 router.get('/teaching-blocks/list', teachingBlocksController.getTeachingBlocks);
+router.put('/teaching-blocks/update/:id', teachingBlocksController.updateTeachingBlock);
 router.delete('/teaching-blocks/delete/:year_id/:del', teachingBlocksController.deleteTeachingBlocks);
 
 module.exports = router;

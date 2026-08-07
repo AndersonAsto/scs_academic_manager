@@ -30,7 +30,7 @@ const SchoolDays = sequelize.define('SchoolDays', {
         allowNull: true
     },
     type: {
-        type: DataTypes.ENUM('Calificación Diaria', 'Práctica', 'Examen', 'Día Feriado'),
+        type: DataTypes.ENUM('Día Lectivo', 'Día Feriado'),
         allowNull: true
     },
     description: {

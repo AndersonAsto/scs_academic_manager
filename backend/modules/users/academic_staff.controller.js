@@ -274,30 +274,6 @@ exports.createAcademicStaff = async (req, res) => {
 
 };
 
-exports.getAcademicStaff = async (req, res) => {
-    try {
-        const {staff_type} = req.query;
-        const whereCondition = {};
-
-        if (staff_type) whereCondition.staff_type = staff_type;
-
-        const query = academicStaffQuery(
-            whereCondition,
-            []
-        );
-        const academicStaff = await AcademicStaffModel.findAll(query);
-
-        return res.status(200).json({
-            message: academicStaff.length === 0 ? 'Aún no hay personal académico registrado en el sistema.' : null,
-            length: academicStaff.length,
-            data: academicStaff
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
-    }
-}
-
 exports.updateAcademicStaff = async (req, res) => {
     const { id } = req.params;
 
@@ -397,6 +373,30 @@ exports.updateAcademicStaff = async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 };
+
+exports.getAcademicStaff = async (req, res) => {
+    try {
+        const {staff_type} = req.query;
+        const whereCondition = {};
+
+        if (staff_type) whereCondition.staff_type = staff_type;
+
+        const query = academicStaffQuery(
+            whereCondition,
+            []
+        );
+        const academicStaff = await AcademicStaffModel.findAll(query);
+
+        return res.status(200).json({
+            message: academicStaff.length === 0 ? 'Aún no hay personal académico registrado en el sistema.' : null,
+            length: academicStaff.length,
+            data: academicStaff
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+}
 
 exports.deleteAcademicStaff = async (req, res) => {
     const { id, del } = req.params;

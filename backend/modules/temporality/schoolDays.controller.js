@@ -76,7 +76,7 @@ exports.createSchoolDays = async (req, res) => {
                         school_day: schoolDaysHelpers.formatDateOnly(current),
                         day: dayName,
                         week_number: week,
-                        type: 'Calificación Diaria',
+                        type: 'Día Lectivo',
                         description: null
                     });
 

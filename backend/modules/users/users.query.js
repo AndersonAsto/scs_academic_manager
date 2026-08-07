@@ -6,7 +6,7 @@ const usersQuery = (where = {}, order = []) => ({
         model: PersonalInformation,
         as: 'personal_information'
     },
-    attributes: ['id','personal_information_id','username','role','description','status','createdAt', 'createdAt'],
+    attributes: ['id','personal_information_id','username','role','description','status','createdAt', 'updatedAt'],
     order
 });
 
