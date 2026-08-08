@@ -30,11 +30,9 @@ exports.getUsers = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     const { personal_information_id } = req.params;
-    const { username, hashed_password, role } = req.body;
+    const { username, hashed_password, role, description } = req.body;
 
     try {
-        if (!hashed_password)
-            return res.status(400).json({ message: 'Complete los campos obligatorios.' });
 
         const uUser = await Users.findOne({ where: { personal_information_id } });
 
@@ -50,6 +48,7 @@ exports.updateUser = async (req, res) => {
         uUser.username = username;
         uUser.hashed_password = hashed_password;
         uUser.role = role;
+        uUser.description = description;
 
         await uUser.save();
         return res.status(201).json({

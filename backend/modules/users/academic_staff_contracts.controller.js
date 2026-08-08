@@ -43,7 +43,7 @@ exports.updateAcademicStaffContract = async (req, res) => {
 
         uAcademicStaffContracts.start_date = start_date;
         uAcademicStaffContracts.end_date = end_date;
-        uAcademicStaffContracts.position = end_date;
+        uAcademicStaffContracts.position = position;
         uAcademicStaffContracts.description = description;
 
         await uAcademicStaffContracts.save();

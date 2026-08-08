@@ -11,10 +11,8 @@ exports.createAcademicStaff = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
-
         const {
-
-            personal_information_id,
+            academic_staff_id,
 
             names,
             fathers_surname,
@@ -39,67 +37,35 @@ exports.createAcademicStaff = async (req, res) => {
         } = req.body;
 
         if (!role || !start_date || !end_date) {
-
             await transaction.rollback();
 
             return res.status(400).json({
                 message: 'Complete los campos obligatorios.'
             });
-
         }
 
         if (new Date(start_date) > new Date(end_date)) {
-
             await transaction.rollback();
 
             return res.status(400).json({
                 message: 'La fecha de inicio no puede ser mayor que la fecha de fin.'
             });
-
         }
 
-        let personalInformation;
         let academicStaff;
 
-        if (personal_information_id) {
-
-            personalInformation = await PersonalInformationModel.findByPk(
-                personal_information_id,
+        if (academic_staff_id) {
+            academicStaff = await AcademicStaffModel.findByPk(
+                academic_staff_id,
                 { transaction }
             );
 
-            if (!personalInformation) {
-
-                await transaction.rollback();
-
-                return res.status(404).json({
-                    message: 'La información personal no existe.'
-                });
-
-            }
-
-            academicStaff = await AcademicStaffModel.findOne({
-
-                where: {
-                    personal_information_id
-                },
-
-                transaction
-
-            });
-
             if (!academicStaff) {
-
-                academicStaff = await AcademicStaffModel.create({
-
-                    personal_information_id,
-                    staff_type: role,
-                    description
-
-                }, { transaction });
-
+                await transaction.rollback();
+                return res.status(404).json({
+                    message: 'El personal académico no existe.'
+                });
             }
-
         } else {
 
             if (
@@ -179,70 +145,51 @@ exports.createAcademicStaff = async (req, res) => {
         const contracts = [];
 
         for (let year = startYear; year <= endYear; year++) {
-
             const yearRecord = await YearsModel.findOne({
-
                 where: { year },
-
                 transaction
-
             });
 
             if (!yearRecord) {
-
                 await transaction.rollback();
-
                 return res.status(404).json({
                     message: `El año ${year} no se encuentra registrado en el sistema.`
                 });
-
             }
 
             const existContract = await AcademicStaffContractsModel.findOne({
-
                 where: {
-
                     academic_staff_id: academicStaff.id,
                     year_id: yearRecord.id
 
                 },
-
                 transaction
 
             });
 
             if (existContract) {
-
                 await transaction.rollback();
 
                 return res.status(409).json({
                     message: `Ya existe un contrato para el año ${year}.`
                 });
-
             }
 
             contracts.push({
-
                 academic_staff_id: academicStaff.id,
 
                 year_id: yearRecord.id,
-
                 start_date:
                     year === startYear
                         ? start_date
                         : `${year}-01-01`,
-
                 end_date:
                     year === endYear
                         ? end_date
                         : `${year}-12-31`,
-
                 position,
-
                 description
-
             });
-
         }
 
         await AcademicStaffContractsModel.bulkCreate(
@@ -253,25 +200,16 @@ exports.createAcademicStaff = async (req, res) => {
         await transaction.commit();
 
         return res.status(201).json({
-
-            message: personal_information_id
+            message: academic_staff_id
                 ? 'Contratos registrados correctamente.'
                 : 'Personal académico registrado correctamente.'
-
         });
 
     } catch (error) {
-
         await transaction.rollback();
-
         console.error(error);
-
-        return res.status(500).json({
-            message: 'Error interno del servidor. Inténtelo más tarde.'
-        });
-
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
-
 };
 
 exports.updateAcademicStaff = async (req, res) => {
@@ -376,7 +314,7 @@ exports.updateAcademicStaff = async (req, res) => {
 
 exports.getAcademicStaff = async (req, res) => {
     try {
-        const {staff_type} = req.query;
+        const { staff_type } = req.query;
         const whereCondition = {};
 
         if (staff_type) whereCondition.staff_type = staff_type;
