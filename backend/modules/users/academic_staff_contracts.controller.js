@@ -1,5 +1,8 @@
 const academicStaffContractsModel = require('./academic_staff_contracts.model');
 const academicStaffContractsQuery = require('./academic_staff_contracts.query');
+const AcademicStaff = require('./academic_staff.model');
+const AcademicStaffContracts = require('./academic_staff_contracts.model');
+const Years = require('../temporality/years.model');
 
 exports.getAcademicStaffContracts = async (req, res) => {
     try {
@@ -84,3 +87,43 @@ exports.deleteAcadmeicStaffContract = async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 }
+
+
+exports.getMyContracts = async (req, res) => {
+    try {
+        const { personalInformationId } = req.user;
+
+        const academicStaff = await AcademicStaff.findOne({
+            where: { personal_information_id: personalInformationId, status: true },
+        });
+
+        if (!academicStaff) {
+            return res.status(404).json({
+                message: 'No se encontró personal académico asociado a este usuario.',
+            });
+        }
+
+        const contracts = await AcademicStaffContracts.findAll({
+            where: { academic_staff_id: academicStaff.id, status: true },
+            order: [['year_id', 'DESC']],
+        });
+
+        const yearIds = [...new Set(contracts.map((c) => c.year_id))];
+        const years = await Years.findAll({ where: { id: yearIds } });
+        const yearsById = new Map(years.map((y) => [y.id, y.year]));
+
+        const data = contracts.map((contract) => ({
+            id: contract.id,
+            year_id: contract.year_id,
+            year: yearsById.get(contract.year_id) ?? null,
+            position: contract.position,
+            start_date: contract.start_date,
+            end_date: contract.end_date,
+        }));
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

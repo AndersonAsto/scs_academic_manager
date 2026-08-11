@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const registrationsController = require('./registrations.controller');
+const { verifyAccessToken, requireRole } = require('../auth/auth.middleware');
+
+router.use(verifyAccessToken);
+
+router.get('/registrations/by-group', requireRole('Docente', 'Administrador'), registrationsController.getRegistrationsForGroup);
 
 router.post('/registrations/create', registrationsController.createRegistration);
 router.get('/registrations/list', registrationsController.getRegistrations);

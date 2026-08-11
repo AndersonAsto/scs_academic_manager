@@ -4,6 +4,8 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 
+const cookieParser = require('cookie-parser');
+
 const sequelize = require('./config/db.config');
 const app = express();
 
@@ -31,8 +33,10 @@ const corsOptions = {
 
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(morgan('combined'));
+app.use('/api', appRoutes.AuthRoutes);
 
 app.use('/api', appRoutes.CoursesRoutes);
 app.use('/api', appRoutes.GradesRoutes);
@@ -52,6 +56,10 @@ app.use('/api', appRoutes.WeightingsRoutes);
 app.use('/api', appRoutes.TeacherGroupsRoutes);
 app.use('/api', appRoutes.SchedulesRoutes);
 app.use('/api', appRoutes.SchoolDaysBySchedule);
+app.use('/api', appRoutes.AcademicRecordsRoutes);
+app.use('/api', appRoutes.TeachingBlockCourseAverageRoutes);
+app.use('/api', appRoutes.CourseAverageRoutes);
+app.use('/api', appRoutes.GeneralAverageRoutes);
 
 app.get('/', (req, res) => {
     res.send('Bienvenido');

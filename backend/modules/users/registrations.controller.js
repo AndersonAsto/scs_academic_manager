@@ -264,15 +264,10 @@ exports.getRegistrations = async (req, res) => {
         const whereCondition = {};
 
         if (year_id) whereCondition.year_id = year_id;
-
         if (parent_id) whereCondition.parent_id = parent_id;
-
         if (student_id) whereCondition.student_id = student_id;
-
         if (grade_id) whereCondition.grade_id = grade_id;
-
         if (section_id) whereCondition.section_id = section_id;
-
         const query = registrationsQuery(
             whereCondition,
             []
@@ -459,6 +454,54 @@ exports.restoreRegistration = async (req, res) => {
         await transaction.rollback();
 
         console.error(error);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};
+
+exports.getRegistrationsForGroup = async (req, res) => {
+    try {
+        const { year_id, grade_id, section_id } = req.query;
+
+        if (!year_id || !grade_id || !section_id) {
+            return res.status(400).json({ message: 'Debe especificar año, grado y sección.' });
+        }
+
+        const registrations = await Registrations.findAll({
+            where: { year_id, grade_id, section_id, status: true },
+        });
+
+        const studentIds = [...new Set(registrations.map((r) => r.student_id))];
+        const students = await Students.findAll({ where: { id: studentIds, status: true } });
+
+        const personalInfoIds = [...new Set(students.map((s) => s.personal_information_id))];
+        const personalInformation = await PersonalInformation.findAll({
+            where: { id: personalInfoIds },
+        });
+
+        const studentsById = new Map(students.map((s) => [s.id, s]));
+        const personalInfoById = new Map(personalInformation.map((p) => [p.id, p]));
+
+        const data = registrations
+            .map((registration) => {
+                const student = studentsById.get(registration.student_id);
+                const info = student ? personalInfoById.get(student.personal_information_id) : null;
+
+                if (!info) return null;
+
+                return {
+                    registration_id: registration.id,
+                    student_id: registration.student_id,
+                    names: info.names,
+                    fathers_surname: info.fathers_surname,
+                    mothers_surname: info.mothers_surname,
+                };
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.fathers_surname.localeCompare(b.fathers_surname));
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 };

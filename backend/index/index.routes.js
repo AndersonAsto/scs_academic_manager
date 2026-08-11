@@ -1,3 +1,5 @@
+const AuthRoutes = require('../modules/auth/auth.routes');
+
 const CoursesRoutes = require('../modules/courses/courses.routes');
 const GradesRoutes = require('../modules/grades/grades.routes');
 const SectionsRoutes = require('../modules/sections/sections.routes');
@@ -16,6 +18,10 @@ const WeightingsRoutes = require('../modules/academic_record/weightings/weightin
 const TeacherGroupsRoutes = require('../modules/academic_record/teacher_groups/teacher_groups.routes');
 const SchedulesRoutes = require('../modules/academic_record/schedules/schedules.routes');
 const SchoolDaysBySchedule = require('../modules/academic_record/school_days_by_schedule/school_days_by_schedule.routes');
+const AcademicRecordsRoutes = require('../modules/academic_record/academic_records/academic_record.routes');
+const TeachingBlockCourseAverageRoutes = require('../modules/academic_record/teaching_block_course_average/teaching_block_course_average.routes');
+const CourseAverageRoutes = require('../modules/academic_record/course_average/course_average.routes');
+const GeneralAverageRoutes = require('../modules/academic_record/general_average/general_average.routes');
 
 module.exports = {
     CoursesRoutes,
@@ -35,5 +41,10 @@ module.exports = {
     WeightingsRoutes,
     TeacherGroupsRoutes,
     SchedulesRoutes,
-    SchoolDaysBySchedule
+    SchoolDaysBySchedule,
+    AcademicRecordsRoutes,
+    TeachingBlockCourseAverageRoutes,
+    CourseAverageRoutes,
+    GeneralAverageRoutes,
+    AuthRoutes
 }

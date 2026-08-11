@@ -218,3 +218,56 @@ exports.updateSchoolDayBySchedule = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 }
+
+const SchoolDaysBySchedule = require('./school_days_by_schedule.model');
+
+exports.getLectiveDaysBySchedule = async (req, res) => {
+    try {
+        const { schedule_id } = req.query;
+
+        if (!schedule_id) {
+            return res.status(400).json({ message: 'Debe especificar el horario.' });
+        }
+
+        const daysBySchedule = await SchoolDaysBySchedule.findAll({
+            where: { schedule_id, status: true },
+        });
+
+        const schoolDayIds = [...new Set(daysBySchedule.map((d) => d.school_day_id))];
+
+        const schoolDays = await SchoolDays.findAll({
+            where: { id: schoolDayIds, type: 'Día Lectivo', status: true },
+        });
+
+        const schoolDaysById = new Map(schoolDays.map((d) => [d.id, d]));
+
+        // Nuevo: resolver el bloque lectivo de cada school_day.
+        const teachingBlockIds = [...new Set(schoolDays.map((d) => d.teaching_block_id))];
+
+        const teachingBlocks = await TeachingBlocks.findAll({
+            where: { id: teachingBlockIds },
+        });
+
+        const teachingBlocksById = new Map(teachingBlocks.map((tb) => [tb.id, tb.teaching_block]));
+
+        const data = daysBySchedule
+            .filter((d) => schoolDaysById.has(d.school_day_id))
+            .map((d) => {
+                const schoolDay = schoolDaysById.get(d.school_day_id);
+
+                return {
+                    id: d.id, // este es el school_day_by_schedule_id que se manda a createAcademicRecords
+                    date: schoolDay.school_day,
+                    day: schoolDay.day,
+                    week_number: schoolDay.week_number,
+                    teaching_block: teachingBlocksById.get(schoolDay.teaching_block_id) ?? null,
+                    type: d.type,
+                };
+            });
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

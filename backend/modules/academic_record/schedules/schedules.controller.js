@@ -93,3 +93,42 @@ exports.deleteSchedule = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 }
+
+const Schedules = require('./schedules.model');
+const TimeSlots = require('../../time_slots/time_slots.model');
+
+exports.getSchedulesByTeacherGroup = async (req, res) => {
+    try {
+        const { teacher_group_id } = req.query;
+
+        if (!teacher_group_id) {
+            return res.status(400).json({ message: 'Debe especificar el grupo de enseñanza.' });
+        }
+
+        const schedules = await Schedules.findAll({
+            where: { teacher_group_id, status: true },
+        });
+
+        const timeSlotIds = [...new Set(schedules.map((s) => s.time_slot_id))];
+        const timeSlots = await TimeSlots.findAll({ where: { id: timeSlotIds } });
+        const timeSlotsById = new Map(timeSlots.map((t) => [t.id, t]));
+
+        const data = schedules.map((schedule) => {
+            const timeSlot = timeSlotsById.get(schedule.time_slot_id);
+
+            return {
+                id: schedule.id,
+                day: schedule.day,
+                time_slot_id: schedule.time_slot_id,
+                time_slot: timeSlot?.time_slot ?? null,
+                start_time: timeSlot?.start_time ?? null,
+                end_time: timeSlot?.end_time ?? null,
+            };
+        });
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

@@ -1,0 +1,8 @@
+const express = require('express');
+const router = express.Router();
+const academicRecordsController = require('./academic_record.controller');
+
+router.post('/academic-records/create', academicRecordsController.createAcademicRecords);
+router.get('/academic-records/list', academicRecordsController.getAcademicRecords);
+
+module.exports = router;

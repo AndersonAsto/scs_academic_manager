@@ -96,3 +96,52 @@ exports.deleteTeacherGroup = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 }
+
+const TeacherGroups = require('./teacher_groups.model');
+const Courses = require('../../courses/courses.model');
+const Grades = require('../../grades/grades.model');
+const Sections = require('../../sections/sections.model');
+
+exports.getTeacherGroupsByContract = async (req, res) => {
+    try {
+        const { academic_staff_contract_id } = req.query;
+
+        if (!academic_staff_contract_id) {
+            return res.status(400).json({ message: 'Debe especificar el contrato del docente.' });
+        }
+
+        const teacherGroups = await TeacherGroups.findAll({
+            where: { academic_staff_contract_id, status: true },
+        });
+
+        const courseIds = [...new Set(teacherGroups.map((g) => g.course_id))];
+        const gradeIds = [...new Set(teacherGroups.map((g) => g.grade_id))];
+        const sectionIds = [...new Set(teacherGroups.map((g) => g.section_id))];
+
+        const [courses, grades, sections] = await Promise.all([
+            Courses.findAll({ where: { id: courseIds } }),
+            Grades.findAll({ where: { id: gradeIds } }),
+            Sections.findAll({ where: { id: sectionIds } }),
+        ]);
+
+        const coursesById = new Map(courses.map((c) => [c.id, c.course]));
+        const gradesById = new Map(grades.map((g) => [g.id, g.grade]));
+        const sectionsById = new Map(sections.map((s) => [s.id, s.section]));
+
+        const data = teacherGroups.map((group) => ({
+            id: group.id,
+            course_id: group.course_id,
+            course: coursesById.get(group.course_id) ?? null,
+            grade_id: group.grade_id,
+            grade: gradesById.get(group.grade_id) ?? null,
+            section_id: group.section_id,
+            section: sectionsById.get(group.section_id) ?? null,
+            tutor: group.tutor,
+        }));
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};
