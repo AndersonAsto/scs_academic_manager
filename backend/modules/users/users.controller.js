@@ -30,7 +30,7 @@ exports.getUsers = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     const { personal_information_id } = req.params;
-    const { username, hashed_password, role, description } = req.body;
+    const { username, hashed_password, role, profile_picture, description } = req.body;
 
     try {
 
@@ -48,6 +48,7 @@ exports.updateUser = async (req, res) => {
         uUser.username = username;
         uUser.hashed_password = hashed_password;
         uUser.role = role;
+        uUser.profile_picture = profile_picture;
         uUser.description = description;
 
         await uUser.save();

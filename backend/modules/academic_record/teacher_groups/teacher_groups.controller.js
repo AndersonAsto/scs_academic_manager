@@ -101,6 +101,7 @@ const TeacherGroups = require('./teacher_groups.model');
 const Courses = require('../../courses/courses.model');
 const Grades = require('../../grades/grades.model');
 const Sections = require('../../sections/sections.model');
+const AcademicStaffContracts = require('../../users/academic_staff_contracts.model');
 
 exports.getTeacherGroupsByContract = async (req, res) => {
     try {
@@ -137,6 +138,43 @@ exports.getTeacherGroupsByContract = async (req, res) => {
             section_id: group.section_id,
             section: sectionsById.get(group.section_id) ?? null,
             tutor: group.tutor,
+        }));
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};
+
+exports.getTeacherGroupsBySection = async (req, res) => {
+    try {
+        const { year_id, grade_id, section_id } = req.query;
+
+        if (!year_id || !grade_id || !section_id) {
+            return res.status(400).json({ message: 'Debe especificar año, grado y sección.' });
+        }
+
+        const teacherGroups = await TeacherGroups.findAll({
+            where: { grade_id, section_id, status: true },
+            include: [
+                {
+                    model: AcademicStaffContracts,
+                    as: 'academic_staff_contract',
+                    where: { year_id },
+                    attributes: []
+                }
+            ]
+        });
+
+        const courseIds = [...new Set(teacherGroups.map((g) => g.course_id))];
+        const courses = await Courses.findAll({ where: { id: courseIds } });
+        const coursesById = new Map(courses.map((c) => [c.id, c.course]));
+
+        const data = teacherGroups.map((group) => ({
+            id: group.id,
+            course_id: group.course_id,
+            course: coursesById.get(group.course_id) ?? null,
         }));
 
         return res.status(200).json({ length: data.length, data });

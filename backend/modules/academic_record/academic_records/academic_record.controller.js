@@ -7,6 +7,10 @@ const SchoolDaysBySchedule = require('../school_days_by_schedule/school_days_by_
 const Schedules = require('../schedules/schedules.model');
 const TeacherGroups = require('../teacher_groups/teacher_groups.model');
 const AcademicStaffContracts = require('../../users/academic_staff_contracts.model');
+const AcademicRecords = require('./academic_record.model');
+const SchoolDays = require('../../temporality/schoolDays.model');
+const TimeSlots = require('../../time_slots/time_slots.model');
+const TeachingBlocks = require('../../temporality/teachingBlocks.model');
 
 exports.createAcademicRecords = async (req, res) => {
     const {
@@ -280,4 +284,58 @@ exports.getAcademicRecords = async (req, res) => {
         console.error(error.message);
         res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
-}
+};
+
+exports.getAcademicRecordsByStudentGroup = async (req, res) => {
+    try {
+        const { registration_id, teacher_group_id } = req.query;
+
+        if (!registration_id || !teacher_group_id) {
+            return res.status(400).json({ message: 'Debe especificar la matrícula y el grupo docente.' });
+        }
+
+        const records = await AcademicRecords.findAll({
+            where: { registration_id, status: true },
+            include: [
+                {
+                    model: SchoolDaysBySchedule,
+                    as: 'school_day_by_schedule',
+                    required: true,
+                    include: [
+                        {
+                            model: Schedules,
+                            as: 'schedule',
+                            where: { teacher_group_id },
+                            required: true,
+                            include: [{ model: TimeSlots, as: 'time_slot' }]
+                        },
+                        {
+                            model: SchoolDays,
+                            as: 'school_day',
+                            include: [{ model: TeachingBlocks, as: 'teaching_block' }]
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const data = records
+            .map((r) => ({
+                school_day: r.school_day_by_schedule.school_day.school_day,
+                type: r.school_day_by_schedule.type,
+                day: r.school_day_by_schedule.school_day.day,
+                week_number: r.school_day_by_schedule.school_day.week_number,
+                teaching_block: r.school_day_by_schedule.school_day.teaching_block.teaching_block,
+                time_slot: r.school_day_by_schedule.schedule.time_slot.time_slot,
+                attendance: r.attendance,
+                score: r.score,
+                incident: r.incident,
+            }))
+            .sort((a, b) => a.school_day.localeCompare(b.school_day));
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const teachingBlocksController = require('./teachingBlocks.controller');
+const { verifyAccessToken, requireRole } = require('../auth/auth.middleware');
+
+router.use(verifyAccessToken);
+
+router.get('/teaching-blocks/by-year', requireRole('Docente', 'Administrador'), teachingBlocksController.getTeachingBlocksByYear);
 
 router.post('/teaching-blocks/create', teachingBlocksController.createTeachingBlocks);
 router.get('/teaching-blocks/list', teachingBlocksController.getTeachingBlocks);

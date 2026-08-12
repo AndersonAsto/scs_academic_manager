@@ -505,3 +505,61 @@ exports.getRegistrationsForGroup = async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 };
+
+async function resolveParentId(userId) {
+    const user = await Users.findByPk(userId);
+    if (!user) return null;
+
+    const parent = await Parents.findOne({
+        where: { personal_information_id: user.personal_information_id, status: true },
+    });
+
+    return parent ? parent.id : null;
+}
+
+exports.getMyChildrenRegistrations = async (req, res) => {
+    try {
+        const parentId = await resolveParentId(req.user.sub);
+
+        if (!parentId) {
+            return res.status(403).json({
+                message: 'No se encontró un perfil de apoderado asociado a esta cuenta.'
+            });
+        }
+
+        const registrations = await Registrations.findAll({
+            where: { parent_id: parentId, status: true },
+            include: [
+                { model: Years, as: 'year' },
+                { model: Grades, as: 'grade' },
+                { model: Sections, as: 'section' },
+                {
+                    model: Students,
+                    as: 'student',
+                    include: { model: PersonalInformation, as: 'personal_information' }
+                },
+            ],
+        });
+
+        const data = registrations
+            .map((r) => ({
+                registration_id: r.id,
+                year_id: r.year_id,
+                year: r.year.year,
+                grade_id: r.grade_id,
+                grade: r.grade.grade,
+                section_id: r.section_id,
+                section: r.section.section,
+                student_id: r.student.id,
+                names: r.student.personal_information.names,
+                fathers_surname: r.student.personal_information.fathers_surname,
+                mothers_surname: r.student.personal_information.mothers_surname,
+            }))
+            .sort((a, b) => b.year - a.year);
+
+        return res.status(200).json({ length: data.length, data });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

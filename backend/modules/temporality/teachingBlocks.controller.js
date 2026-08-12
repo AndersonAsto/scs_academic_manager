@@ -133,3 +133,25 @@ exports.deleteTeachingBlocks = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 }
+
+const TeachingBlocks = require('./teachingBlocks.model');
+
+exports.getTeachingBlocksByYear = async (req, res) => {
+    try {
+        const { year_id } = req.query;
+
+        if (!year_id) {
+            return res.status(400).json({ message: 'Debe especificar el año.' });
+        }
+
+        const teachingBlocks = await TeachingBlocks.findAll({
+            where: { year_id, status: true },
+            order: [['start_day', 'ASC']],
+        });
+
+        return res.status(200).json({ length: teachingBlocks.length, data: teachingBlocks });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

@@ -85,4 +85,6 @@ const CourseAverageQuery = (where = {}, order = []) => ({
             ]
         },
     ]
-})
+});
+
+module.exports = CourseAverageQuery;

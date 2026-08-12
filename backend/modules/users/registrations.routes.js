@@ -6,6 +6,7 @@ const { verifyAccessToken, requireRole } = require('../auth/auth.middleware');
 router.use(verifyAccessToken);
 
 router.get('/registrations/by-group', requireRole('Docente', 'Administrador'), registrationsController.getRegistrationsForGroup);
+router.get('/registrations/my-children', requireRole('Apoderado'), registrationsController.getMyChildrenRegistrations);
 
 router.post('/registrations/create', registrationsController.createRegistration);
 router.get('/registrations/list', registrationsController.getRegistrations);

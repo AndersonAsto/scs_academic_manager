@@ -88,7 +88,6 @@ exports.deleteAcadmeicStaffContract = async (req, res) => {
     }
 }
 
-
 exports.getMyContracts = async (req, res) => {
     try {
         const { personalInformationId } = req.user;

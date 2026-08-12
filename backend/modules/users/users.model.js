@@ -31,6 +31,10 @@ const Users = sequelize.define('Users', {
         type: DataTypes.ENUM('Administrador', 'Docente', 'Estudiante', 'Apoderado'),
         allowNull: false,
     },
+    profile_picture: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true,
