@@ -7,6 +7,9 @@ const Parents = require("../modules/users/parents.model");
 const PersonalInformation = require("../modules/users/personal_information.model");
 const Registrations = require("../modules/users/registrations.model");
 const Students = require("../modules/users/students.model");
+const AcademicStaff = require('../modules/users/academic_staff.model');
+const AcademicStaffContracts = require('../modules/users/academic_staff_contracts.model');
+
 
 module.exports = {
     TeacherGroups,
@@ -17,5 +20,7 @@ module.exports = {
     Parents,
     PersonalInformation,
     Registrations,
-    Students
+    Students,
+    AcademicStaff,
+    AcademicStaffContracts
 }

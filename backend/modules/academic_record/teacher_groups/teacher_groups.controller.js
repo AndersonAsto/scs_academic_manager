@@ -183,3 +183,258 @@ exports.getTeacherGroupsBySection = async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 };
+
+
+
+const AcademicStaff = require('../../users/academic_staff.model');
+const PersonalInformation = require('../../users/personal_information.model');
+const Years = require('../../temporality/years.model');
+
+const Registrations = require('../../users/registrations.model');
+const Students = require('../../users/students.model');
+
+exports.getTutorGroupReport = async (req, res) => {
+    try {
+        const { year_id, grade_id, section_id } = req.query;
+
+        if (!year_id || !grade_id || !section_id) {
+            return res.status(400).json({
+                message: 'Debe especificar año, grado y sección.'
+            });
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * 1. OBTENER EL GRUPO DE DOCENTE QUE ES TUTOR
+         * ---------------------------------------------------------
+         */
+
+        const teacherGroup = await TeacherGroups.findOne({
+            where: {
+                grade_id,
+                section_id,
+                tutor: true,
+                status: true
+            },
+
+            include: [
+                {
+                    model: AcademicStaffContracts,
+                    as: 'academic_staff_contract',
+
+                    where: {
+                        year_id,
+                        status: true
+                    },
+
+                    include: [
+                        {
+                            model: AcademicStaff,
+                            as: 'academic_staff',
+
+                            where: {
+                                status: true
+                            },
+
+                            include: [
+                                {
+                                    model: PersonalInformation,
+                                    as: 'personal_information'
+                                }
+                            ]
+                        },
+                        {
+                            model: Years,
+                            as: 'year'
+                        }
+                    ]
+                },
+
+                {
+                    model: Courses,
+                    as: 'course'
+                },
+
+                {
+                    model: Grades,
+                    as: 'grade'
+                },
+
+                {
+                    model: Sections,
+                    as: 'section'
+                }
+            ]
+        });
+
+        if (!teacherGroup) {
+            return res.status(404).json({
+                message: 'No se encontró un docente tutor para el grupo especificado.'
+            });
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * 2. OBTENER LAS MATRÍCULAS DEL GRUPO
+         * ---------------------------------------------------------
+         */
+
+        const registrations = await Registrations.findAll({
+            where: {
+                year_id,
+                grade_id,
+                section_id,
+                status: true
+            }
+        });
+
+        /*
+         * ---------------------------------------------------------
+         * 3. OBTENER LOS ESTUDIANTES
+         * ---------------------------------------------------------
+         */
+
+        const studentIds = [
+            ...new Set(
+                registrations.map(registration => registration.student_id)
+            )
+        ];
+
+        const students = studentIds.length
+            ? await Students.findAll({
+                where: {
+                    id: studentIds,
+                    status: true
+                }
+            })
+            : [];
+
+        /*
+         * ---------------------------------------------------------
+         * 4. OBTENER INFORMACIÓN PERSONAL
+         * ---------------------------------------------------------
+         */
+
+        const personalInformationIds = [
+            ...new Set(
+                students.map(student => student.personal_information_id)
+            )
+        ];
+
+        const personalInformation = personalInformationIds.length
+            ? await PersonalInformation.findAll({
+                where: {
+                    id: personalInformationIds
+                }
+            })
+            : [];
+
+        /*
+         * ---------------------------------------------------------
+         * 5. MAPAS PARA RELACIONAR LOS DATOS
+         * ---------------------------------------------------------
+         */
+
+        const studentsById = new Map(
+            students.map(student => [
+                student.id,
+                student
+            ])
+        );
+
+        const personalInformationById = new Map(
+            personalInformation.map(person => [
+                person.id,
+                person
+            ])
+        );
+
+        /*
+         * ---------------------------------------------------------
+         * 6. ARMAR LISTA DE ESTUDIANTES
+         * ---------------------------------------------------------
+         */
+
+        const studentData = registrations
+            .map(registration => {
+                const student = studentsById.get(
+                    registration.student_id
+                );
+
+                if (!student) {
+                    return null;
+                }
+
+                const person = personalInformationById.get(
+                    student.personal_information_id
+                );
+
+                if (!person) {
+                    return null;
+                }
+
+                return {
+                    registration_id: registration.id,
+
+                    student_id: student.id,
+
+                    names: person.names,
+
+                    fathers_surname: person.fathers_surname,
+
+                    mothers_surname: person.mothers_surname,
+
+                    dni: person.dni,
+
+                    email: person.email,
+
+                    phone_number: person.phone_number,
+
+                    status: student.status
+                };
+            })
+            .filter(Boolean)
+            .sort((a, b) =>
+                a.fathers_surname.localeCompare(
+                    b.fathers_surname,
+                    'es'
+                )
+            );
+
+        /*
+         * ---------------------------------------------------------
+         * 7. RESPUESTA FINAL
+         * ---------------------------------------------------------
+         *
+         * Aquí dejamos TODO el resultado en una sola variable.
+         * Más adelante podremos agregar:
+         *
+         * - academic_records
+         * - teaching_block_course_average
+         * - course_average
+         * - general_average
+         * - asistencia
+         * - etc.
+         *
+         * sin modificar la estructura principal del reporte.
+         */
+
+        const data = {
+            teacher_group: teacherGroup,
+            students: studentData
+        };
+
+        return res.status(200).json({
+            length: studentData.length,
+            data
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            message: 'Error interno del servidor. Inténtelo más tarde.'
+        });
+    }
+};

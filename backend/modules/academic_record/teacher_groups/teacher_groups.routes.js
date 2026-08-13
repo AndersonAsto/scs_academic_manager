@@ -12,5 +12,6 @@ router.post('/teacher-groups/create', teacherGroupsController.createTeachersGrou
 router.get('/teacher-groups/list', teacherGroupsController.getTeacherGroups);
 router.put('/teacher-groups/update/:id', teacherGroupsController.updateTeacherGroup);
 router.delete('/teacher-groups/delete/:id/:del', teacherGroupsController.deleteTeacherGroup);
+router.get('/teacher-groups/tutor-report',requireRole('Docente', 'Administrador'), teacherGroupsController.getTutorGroupReport);
 
 module.exports = router;

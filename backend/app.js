@@ -60,6 +60,7 @@ app.use('/api', appRoutes.AcademicRecordsRoutes);
 app.use('/api', appRoutes.TeachingBlockCourseAverageRoutes);
 app.use('/api', appRoutes.CourseAverageRoutes);
 app.use('/api', appRoutes.GeneralAverageRoutes);
+app.use('/api', appRoutes.AnnouncementsRoutes);
 
 app.get('/', (req, res) => {
     res.send('Bienvenido');
