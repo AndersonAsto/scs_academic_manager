@@ -107,24 +107,55 @@ exports.updateWeighting = async (req, res) => {
     }
 }
 
-exports.deleteWeighting = async (req, res) => {
+exports.deleteWeightings = async (req, res) => {
     try {
-        const { id, del } = req.params;
+        const { year_id, del } = req.params;
+        let fmessage = '';
 
-        const weighting = await weightingsModel.findOne({ where: { id } });
+        const weightings = await weightingsModel.findAll({
+            where: { year_id }
+        });
 
-        if (!weighting) return res.status(404).json({ message: 'Ponderación no encontrada.' });
+        if (weightings.length === 0) {
+            return res.status(404).json({
+                message: 'No se encontraron ponderaciones para el año seleccionado.'
+            });
+        }
 
-        if (del === '0')
-            await weighting.update({ status: false });
-        else if (del === '1')
-            await weighting.destroy();
-        else
-            return res.status(400).json({ message: 'Tipo de eliminación no válido.' });
+        if (del === '0') {
 
-        return res.status(200).json({ message: del === '0' ? 'Sección archivada/desactivada correctamente.' : 'Sección eliminada correctamente.' });
+            await weightingsModel.update(
+                { status: false },
+                { where: { year_id } }
+            );
+
+            fmessage = 'Ponderaciones archivadas/desactivadas correctamente.';
+
+        } else if (del === '1') {
+
+            await weightingsModel.destroy({
+                where: { year_id }
+            });
+
+            fmessage = 'Ponderaciones eliminadas correctamente.';
+
+        } else {
+
+            return res.status(400).json({
+                message: 'Tipo de eliminación no válido.'
+            });
+
+        }
+
+        return res.status(200).json({
+            message: fmessage
+        });
+
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+
+        res.status(500).json({
+            message: 'Error interno del servidor. Inténtelo más tarde.'
+        });
     }
-}
+};

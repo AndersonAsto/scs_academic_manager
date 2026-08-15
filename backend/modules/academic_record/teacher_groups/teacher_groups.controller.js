@@ -438,3 +438,47 @@ exports.getTutorGroupReport = async (req, res) => {
         });
     }
 };
+
+exports.getTutorBySection = async (req, res) => {
+    try {
+        const { year_id, grade_id, section_id } = req.query;
+
+        if (!year_id || !grade_id || !section_id) {
+            return res.status(400).json({ message: 'Debe especificar año, grado y sección.' });
+        }
+
+        const tutorGroup = await TeacherGroups.findOne({
+            where: { grade_id, section_id, tutor: true, status: true },
+            include: [
+                {
+                    model: AcademicStaffContracts,
+                    as: 'academic_staff_contract',
+                    where: { year_id },
+                    required: true,
+                    include: {
+                        model: AcademicStaff,
+                        as: 'academic_staff',
+                        include: { model: PersonalInformation, as: 'personal_information' },
+                    },
+                },
+            ],
+        });
+
+        if (!tutorGroup) {
+            return res.status(200).json({ data: null });
+        }
+
+        const person = tutorGroup.academic_staff_contract.academic_staff.personal_information;
+
+        return res.status(200).json({
+            data: {
+                names: person.names,
+                fathers_surname: person.fathers_surname,
+                mothers_surname: person.mothers_surname,
+            },
+        });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};

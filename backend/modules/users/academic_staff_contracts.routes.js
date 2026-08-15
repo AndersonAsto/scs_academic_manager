@@ -9,6 +9,6 @@ router.get('/academic-staff-contracts/mine', requireRole('Docente', 'Administrad
 
 router.get('/academic-staff-contracts/list', academicStaffContractsController.getAcademicStaffContracts);
 router.put('/academic-staff-contracts/update/:id', academicStaffContractsController.updateAcademicStaffContract);
-router.delete('/academic-staff-contracts/delete/:id/:del', academicStaffContractsController.deleteAcadmeicStaffContract);
+router.delete('/academic-staff-contracts/delete/:id/:del', academicStaffContractsController.deleteAcademicStaffContract);
 
 module.exports = router;

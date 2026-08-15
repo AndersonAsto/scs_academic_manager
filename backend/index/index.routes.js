@@ -23,6 +23,7 @@ const TeachingBlockCourseAverageRoutes = require('../modules/academic_record/tea
 const CourseAverageRoutes = require('../modules/academic_record/course_average/course_average.routes');
 const GeneralAverageRoutes = require('../modules/academic_record/general_average/general_average.routes');
 const AnnouncementsRoutes = require('../modules/announcements/announcements.routes');
+const DashboardRoutes = require('../modules/dashboard/dashboard.routes');
 
 module.exports = {
     CoursesRoutes,
@@ -48,5 +49,6 @@ module.exports = {
     CourseAverageRoutes,
     GeneralAverageRoutes,
     AuthRoutes,
-    AnnouncementsRoutes
+    AnnouncementsRoutes,
+    DashboardRoutes
 }

@@ -7,6 +7,7 @@ router.use(verifyAccessToken);
 
 router.get('/teacher-groups/by-contract', requireRole('Docente', 'Administrador'), teacherGroupsController.getTeacherGroupsByContract);
 router.get('/teacher-groups/by-section', requireRole('Docente', 'Administrador', 'Apoderado'), teacherGroupsController.getTeacherGroupsBySection);
+router.get('/teacher-groups/tutor-by-section', teacherGroupsController.getTutorBySection);
 
 router.post('/teacher-groups/create', teacherGroupsController.createTeachersGroup);
 router.get('/teacher-groups/list', teacherGroupsController.getTeacherGroups);

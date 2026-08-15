@@ -1,14 +1,13 @@
 const { Op } = require('sequelize');
-
 const schoolDaysByScheduleModel = require('./school_days_by_schedule.model');
 const schoolDaysByScheduleQuery = require('./school_days_by_schedule.query');
-
 const Schedules = require('../schedules/schedules.model');
 const TeacherGroups = require('../teacher_groups/teacher_groups.model');
 const AcademicStaffContracts = require('../../users/academic_staff_contracts.model');
 const Years = require('../../temporality/years.model');
 const SchoolDays = require('../../temporality/schoolDays.model');
 const TeachingBlocks = require('../../temporality/teachingBlocks.model');
+const SchoolDaysBySchedule = require('./school_days_by_schedule.model');
 
 exports.createSchoolDaysBySchedule = async (req, res) => {
     const { year_id } = req.body;
@@ -219,7 +218,6 @@ exports.updateSchoolDayBySchedule = async (req, res) => {
     }
 }
 
-const SchoolDaysBySchedule = require('./school_days_by_schedule.model');
 
 exports.getLectiveDaysBySchedule = async (req, res) => {
     try {
@@ -269,5 +267,114 @@ exports.getLectiveDaysBySchedule = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};
+
+exports.deleteSchoolDaysBySchedule = async (req, res) => {
+    try {
+        const { year_id, del } = req.params;
+
+        if (!year_id) {
+            return res.status(400).json({
+                message: 'Debe especificar el año académico.'
+            });
+        }
+
+        if (del !== '0' && del !== '1') {
+            return res.status(400).json({
+                message: 'Tipo de eliminación no válido.'
+            });
+        }
+
+        const year = await Years.findByPk(year_id);
+
+        if (!year) {
+            return res.status(404).json({
+                message: 'Año académico no encontrado.'
+            });
+        }
+
+        const schedules = await Schedules.findAll({
+            attributes: ['id'],
+            include: [
+                {
+                    model: TeacherGroups,
+                    as: 'teacher_group',
+                    attributes: [],
+                    required: true,
+                    include: [
+                        {
+                            model: AcademicStaffContracts,
+                            as: 'academic_staff_contract',
+                            attributes: [],
+                            required: true,
+                            where: {
+                                year_id
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (schedules.length === 0) {
+            return res.status(404).json({
+                message: 'No existen horarios asociados al año académico seleccionado.'
+            });
+        }
+
+        const scheduleIds = schedules.map(schedule => schedule.id);
+
+        const records = await schoolDaysByScheduleModel.findAll({
+            where: {
+                schedule_id: {
+                    [Op.in]: scheduleIds
+                }
+            }
+        });
+
+        if (records.length === 0) {
+            return res.status(404).json({
+                message: 'No existen sesiones lectivas registradas para el año académico seleccionado.'
+            });
+        }
+
+        if (del === '0') {
+
+            await schoolDaysByScheduleModel.update(
+                { status: false },
+                {
+                    where: {
+                        schedule_id: {
+                            [Op.in]: scheduleIds
+                        }
+                    }
+                }
+            );
+
+            return res.status(200).json({
+                message: 'Sesiones lectivas archivadas/desactivadas correctamente.'
+            });
+
+        }
+
+        await schoolDaysByScheduleModel.destroy({
+            where: {
+                schedule_id: {
+                    [Op.in]: scheduleIds
+                }
+            }
+        });
+
+        return res.status(200).json({
+            message: 'Sesiones lectivas eliminadas correctamente.'
+        });
+
+    } catch (error) {
+        console.error(error.message);
+
+        return res.status(500).json({
+            message: 'Error interno del servidor. Inténtelo más tarde.'
+        });
     }
 };

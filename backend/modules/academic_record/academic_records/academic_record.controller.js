@@ -256,7 +256,7 @@ exports.createAcademicRecords = async (req, res) => {
         await transaction.rollback();
 
         console.error(error);
-        return res.status(500).json({ message:'Error interno del servidor. Inténtelo más tarde.'});
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 };
 
@@ -339,3 +339,303 @@ exports.getAcademicRecordsByStudentGroup = async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
     }
 };
+
+const ExcelJS = require('exceljs');
+const Courses = require('../../courses/courses.model');
+const Grades = require('../../grades/grades.model');
+const Sections = require('../../sections/sections.model');
+const Years = require('../../temporality/years.model');
+const Students = require('../../users/students.model');
+const PersonalInformation = require('../../users/personal_information.model');
+const AcademicStaff = require('../../users/academic_staff.model');
+
+const INSTITUTION_NAME = 'Institución Educativa N° 22234 Santiago Calle Santos';
+
+/*
+ * Arma, por cada curso del grado/sección del estudiante en el año dado,
+ * TODOS los días lectivos programados (school_days_by_schedule) cruzados
+ * con los registros existentes en academic_records.
+ *
+ * Si un día no tiene registro (o el score es null), la celda queda vacía.
+ */
+async function buildStudentDetailedReport(registrationId, yearId) {
+    const registration = await Registrations.findByPk(registrationId, {
+        include: [
+            { model: Years, as: 'year' },
+            { model: Grades, as: 'grade' },
+            { model: Sections, as: 'section' },
+            {
+                model: Students,
+                as: 'student',
+                include: { model: PersonalInformation, as: 'personal_information' },
+            },
+        ],
+    });
+
+    if (!registration) return null;
+
+    // Cursos (teacher_groups) dictados a esa sección, en ese año
+    const teacherGroups = await TeacherGroups.findAll({
+        where: {
+            grade_id: registration.grade_id,
+            section_id: registration.section_id,
+            status: true,
+        },
+        include: [
+            { model: Courses, as: 'course' },
+            {
+                model: AcademicStaffContracts,
+                as: 'academic_staff_contract',
+                where: { year_id: yearId },
+                required: true,
+                include: {
+                    model: AcademicStaff,
+                    as: 'academic_staff',
+                    include: { model: PersonalInformation, as: 'personal_information' },
+                },
+            },
+        ],
+    });
+
+    const courses = [];
+
+    for (const group of teacherGroups) {
+        const schedules = await Schedules.findAll({
+            where: { teacher_group_id: group.id, status: true },
+            include: [{ model: TimeSlots, as: 'time_slot' }],
+        });
+
+        const scheduleIds = schedules.map((s) => s.id);
+        const scheduleById = new Map(schedules.map((s) => [s.id, s]));
+
+        if (scheduleIds.length === 0) {
+            courses.push({
+                teacher_group_id: group.id,
+                course: group.course.course,
+                teacher_names: group.academic_staff_contract.academic_staff.personal_information.names,
+                teacher_fathers_surname:
+                    group.academic_staff_contract.academic_staff.personal_information.fathers_surname,
+                teacher_mothers_surname:
+                    group.academic_staff_contract.academic_staff.personal_information.mothers_surname,
+                rows: [],
+            });
+            continue;
+        }
+
+        // Todos los días lectivos PROGRAMADOS para este curso, sin importar si tienen registro
+        const schoolDaysBySchedule = await SchoolDaysBySchedule.findAll({
+            where: { schedule_id: { [Op.in]: scheduleIds }, status: true },
+            include: [
+                {
+                    model: SchoolDays,
+                    as: 'school_day',
+                    required: true,
+                    where: { type: 'Día Lectivo' },
+                    include: [
+                        {
+                            model: TeachingBlocks,
+                            as: 'teaching_block',
+                            where: { year_id: yearId },
+                            required: true,
+                        },
+                    ],
+                },
+            ],
+        });
+
+        const academicRecords = await AcademicRecords.findAll({
+            where: {
+                registration_id: registrationId,
+                school_day_by_schedule_id: { [Op.in]: schoolDaysBySchedule.map((s) => s.id) },
+            },
+        });
+
+        const recordsBySchoolDaySchedule = new Map(
+            academicRecords.map((r) => [r.school_day_by_schedule_id, r]),
+        );
+
+        const rows = schoolDaysBySchedule
+            .map((sds) => {
+                const schedule = scheduleById.get(sds.schedule_id);
+                const record = recordsBySchoolDaySchedule.get(sds.id);
+
+                return {
+                    school_day: sds.school_day.school_day,
+                    day: sds.school_day.day,
+                    week_number: sds.school_day.week_number,
+                    teaching_block: sds.school_day.teaching_block.teaching_block,
+                    time_slot: schedule?.time_slot?.time_slot ?? null,
+                    type: sds.type,
+                    attendance: record?.attendance ?? null,
+                    score: record?.score ?? null, // null → celda vacía en el excel
+                    incident: record?.incident ?? null,
+                };
+            })
+            .sort((a, b) => a.school_day.localeCompare(b.school_day));
+
+        courses.push({
+            teacher_group_id: group.id,
+            course: group.course.course,
+            teacher_names: group.academic_staff_contract.academic_staff.personal_information.names,
+            teacher_fathers_surname:
+                group.academic_staff_contract.academic_staff.personal_information.fathers_surname,
+            teacher_mothers_surname:
+                group.academic_staff_contract.academic_staff.personal_information.mothers_surname,
+            rows,
+        });
+    }
+
+    return {
+        year: registration.year.year,
+        grade: registration.grade.grade,
+        section: registration.section.section,
+        registration: registration.id,
+        student: {
+            names: registration.student.personal_information.names,
+            fathers_surname: registration.student.personal_information.fathers_surname,
+            mothers_surname: registration.student.personal_information.mothers_surname,
+        },
+        courses,
+    };
+}
+
+exports.downloadStudentDetailedReportExcel = async (req, res) => {
+    try {
+        const { registration_id, year_id } = req.query;
+
+        if (!registration_id || !year_id) {
+            return res.status(400).json({ message: 'Debe especificar la matrícula y el año.' });
+        }
+
+        if (req.user.role === 'Docente') {
+            const isTutor = await verifyDocenteIsTutorOfRegistration(req.user.sub, registration_id, year_id);
+
+            if (!isTutor) {
+                return res.status(403).json({
+                    message: 'No tienes permisos para descargar el reporte de este estudiante.'
+                });
+            }
+        }
+
+        const reportData = await buildStudentDetailedReport(registration_id, year_id);
+
+        if (!reportData) {
+            return res.status(404).json({ message: 'Matrícula no encontrada.' });
+        }
+
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = INSTITUTION_NAME;
+        workbook.created = new Date();
+
+        const studentFullName = `${reportData.student.fathers_surname} ${reportData.student.mothers_surname}, ${reportData.student.names}`;
+
+        for (const course of reportData.courses) {
+            // Excel limita nombres de hoja a 31 caracteres y prohíbe ciertos símbolos
+            const safeName = course.course.replace(/[\\/*?:[\]]/g, '').substring(0, 31);
+            const sheet = workbook.addWorksheet(safeName || `Curso ${course.teacher_group_id}`);
+
+            sheet.mergeCells('A1:H1');
+            sheet.getCell('A1').value = INSTITUTION_NAME;
+            sheet.getCell('A1').font = { bold: true, size: 13 };
+            sheet.getCell('A1').alignment = { horizontal: 'center' };
+
+            const infoRows = [
+                ['Estudiante:', studentFullName],
+                ['Curso:', course.course],
+                ['Docente:', `${course.teacher_fathers_surname} ${course.teacher_mothers_surname}, ${course.teacher_names}`],
+                ['Año:', reportData.year],
+                ['Grado y Sección:', `${reportData.grade} ${reportData.section}`],
+            ];
+
+            infoRows.forEach(([label, value], i) => {
+                const rowNumber = 3 + i;
+                sheet.getCell(`A${rowNumber}`).value = label;
+                sheet.getCell(`A${rowNumber}`).font = { bold: true };
+                sheet.getCell(`B${rowNumber}`).value = value;
+            });
+
+            const headerRowNumber = 9;
+            const headerRow = sheet.getRow(headerRowNumber);
+            headerRow.values = ['Fecha', 'Día', 'Semana', 'Bloque', 'Tipo', 'Asistencia', 'Calificación', 'Incidencia'];
+            headerRow.font = { bold: true };
+            headerRow.eachCell((cell) => {
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
+                cell.border = { bottom: { style: 'thin' } };
+            });
+
+            course.rows.forEach((row, index) => {
+                const excelRow = sheet.getRow(headerRowNumber + 1 + index);
+                excelRow.values = [
+                    row.school_day,
+                    row.day,
+                    row.week_number ?? '',
+                    row.teaching_block,
+                    row.type ?? '',
+                    row.attendance ?? '',
+                    row.score ?? '', // null → celda vacía
+                    row.incident ?? '',
+                ];
+            });
+
+            sheet.columns = [
+                { width: 14 }, { width: 12 }, { width: 10 }, { width: 14 },
+                { width: 18 }, { width: 12 }, { width: 14 }, { width: 30 },
+            ];
+        }
+
+        const fileName = [
+            'Reporte_Detallado',
+            reportData.registration,
+            reportData.student.fathers_surname,
+            reportData.student.mothers_surname,
+            reportData.year,
+            reportData.grade,
+            reportData.section,
+        ]
+            .join('_')
+            .replace(/\s+/g, '_')       // espacios → guion bajo (ej. "1° Grado" → "1°_Grado")
+            .replace(/[\\/:*?"<>|]/g, '') // caracteres no válidos en nombres de archivo
+            + '.xlsx';
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+    }
+};
+
+const Users = require('../../users/users.model');
+
+async function verifyDocenteIsTutorOfRegistration(userId, registrationId, yearId) {
+    const registration = await Registrations.findByPk(registrationId);
+    if (!registration) return false;
+
+    const user = await Users.findByPk(userId);
+    if (!user) return false;
+
+    const academicStaff = await AcademicStaff.findOne({
+        where: { personal_information_id: user.personal_information_id, status: true },
+    });
+    if (!academicStaff) return false;
+
+    const contract = await AcademicStaffContracts.findOne({
+        where: { academic_staff_id: academicStaff.id, year_id: yearId, status: true },
+    });
+    if (!contract) return false;
+
+    const tutorGroup = await TeacherGroups.findOne({
+        where: {
+            academic_staff_contract_id: contract.id,
+            grade_id: registration.grade_id,
+            section_id: registration.section_id,
+            tutor: true,
+            status: true,
+        },
+    });
+
+    return !!tutorGroup;
+}

@@ -8,6 +8,8 @@ const Years = require('../temporality/years.model');
 const Grades = require('../grades/grades.model');
 const Sections = require('../sections/sections.model');
 const registrationsQuery = require('./registrations.query');
+const studentsModel = require('../users/students.model');
+const personalInformationModel = require('../users/personal_information.model');
 
 exports.createRegistration = async (req, res) => {
 

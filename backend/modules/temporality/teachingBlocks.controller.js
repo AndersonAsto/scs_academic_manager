@@ -67,7 +67,7 @@ exports.updateTeachingBlock = async (req, res) => {
 
         if (!uTeachingBlock) return res.status(404).json({ message: 'Bloque lectivo no encontrado.' });
 
-        uTeachingBlock.start_day= start_day;
+        uTeachingBlock.start_day = start_day;
         uTeachingBlock.end_day = end_day;
         uTeachingBlock.description = description;
 
@@ -110,29 +110,49 @@ exports.deleteTeachingBlocks = async (req, res) => {
         const { year_id, del } = req.params;
         let fmessage = '';
 
-        const teachingBlocks = await teachingBlocksModel.findAll({ where: { year_id } });
+        const teachingBlocks = await teachingBlocksModel.findAll({
+            where: { year_id }
+        });
 
-        if (!teachingBlocks) return res.status(404).json({ message: 'Bloques lectivos no encontrados.' });
+        if (teachingBlocks.length === 0) {
+            return res.status(404).json({
+                message: 'No se encontraron bloques lectivos para el año seleccionado.'
+            });
+        }
 
         if (del === '0') {
             await teachingBlocksModel.update(
                 { status: false },
                 { where: { year_id } }
             );
-            fmessage = 'Bloques lectivos archivados/desactivados correctamente.'
+
+            fmessage = 'Bloques lectivos archivados/desactivados correctamente.';
+
         } else if (del === '1') {
-            await teachingBlocksModel.destroy({ where: { year_id } });
-            fmessage = 'Bloques lectivos eliminados correctamente.'
+            await teachingBlocksModel.destroy({
+                where: { year_id }
+            });
+
+            fmessage = 'Bloques lectivos eliminados correctamente.';
+
         } else {
-            return res.status(400).json({ message: 'Tipo de eliminación no válido.' });
+            return res.status(400).json({
+                message: 'Tipo de eliminación no válido.'
+            });
         }
 
-        return res.status(200).json({ message: fmessage });
+        return res.status(200).json({
+            message: fmessage
+        });
+
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+
+        res.status(500).json({
+            message: 'Error interno del servidor. Inténtelo más tarde.'
+        });
     }
-}
+};
 
 const TeachingBlocks = require('./teachingBlocks.model');
 

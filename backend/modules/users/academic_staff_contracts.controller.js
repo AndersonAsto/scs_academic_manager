@@ -61,7 +61,7 @@ exports.updateAcademicStaffContract = async (req, res) => {
     }
 }
 
-exports.deleteAcadmeicStaffContract = async (req, res) => {
+exports.deleteAcademicStaffContract = async (req, res) => {
     try {
         const { id, del } = req.params;
         let fmessage = '';
