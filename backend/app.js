@@ -3,14 +3,12 @@ const helmet = require('helmet');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const path = require('path');
 
 const cookieParser = require('cookie-parser');
-
 const sequelize = require('./config/db.config');
 const app = express();
-
 const PORT = process.env.PORT || 3000;
-
 const appRoutes = require('./index/index.routes');
 
 const corsOptions = {
@@ -31,11 +29,15 @@ const corsOptions = {
     credentials: true,
 };
 
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(morgan('combined'));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
 app.use('/api', appRoutes.AuthRoutes);
 
 app.use('/api', appRoutes.CoursesRoutes);

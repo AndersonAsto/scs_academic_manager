@@ -20,6 +20,7 @@ async function buildUserPayload(user, query) {
         id: user.id,
         username: user.username,
         role: user.role,
+        profile_picture: user.profile_picture,
         personalInformation,
         roleProfile,
     };
