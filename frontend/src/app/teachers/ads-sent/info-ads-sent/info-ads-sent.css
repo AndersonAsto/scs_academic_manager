@@ -1,0 +1,153 @@
+@import url('../../../admin/generic-styles/generic-styles.css');
+@import url('../../../admin/generic-styles/generic-filter.css');
+@import url('../../../admin/generic-styles/generic-create-update.css');
+@import url('../../../admin/generic-styles/generic-list-modal.css');
+
+.modal-large {
+  max-width: 900px;
+  width: 100%;
+}
+
+.modal-large .modal-header {
+  padding-bottom: 16px;
+}
+
+.modal-large > .subtitle {
+  margin: 0;
+  padding: 14px 24px;
+  color: #6b7a67;
+  font-size: 13px;
+  line-height: 1.5;
+  background: #fafbf9;
+  border-bottom: 1px solid #eef1ed;
+}
+
+.modal-large .generics-list {
+  padding: 20px 24px 24px;
+  gap: 10px;
+}
+
+.modal-large .generic-card {
+  position: relative;
+  padding: 16px;
+  min-width: 0;
+  background: #fff;
+}
+
+.modal-large .generic-info {
+  min-width: 0;
+}
+
+.modal-large .generic-content {
+  min-width: 0;
+  gap: 5px;
+}
+
+.modal-large .generic-name {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.generic-subtext {
+  font-size: 12px;
+  color: #6b7a67;
+  line-height: 1.4;
+}
+
+.generic-description {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #444d42;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.modal-large .generic-actions {
+  align-self: flex-start;
+  margin-left: 16px;
+}
+
+.modal-large .status-badge {
+  white-space: nowrap;
+}
+
+/* Estado de lectura */
+.modal-large .status-badge {
+  background: rgba(79, 122, 66, .12);
+  color: #3f6335;
+}
+
+.modal-large .status-badge.inactive {
+  background: rgba(179, 65, 47, .12);
+  color: #b3412f;
+}
+
+/* Botón eliminar */
+.icon-btn.delete {
+  background: rgba(179, 65, 47, .1);
+  color: #b3412f;
+}
+
+.icon-btn.delete:hover {
+  background: rgba(179, 65, 47, .18);
+}
+
+/* Hover de las tarjetas */
+.modal-large .generic-card:hover {
+  border-color: #d7ddd3;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .05);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .modal-large {
+    max-width: 100%;
+  }
+
+  .modal-large .modal-header {
+    padding: 16px 18px;
+  }
+
+  .modal-large > .subtitle {
+    padding: 12px 18px;
+  }
+
+  .modal-large .generics-list {
+    padding: 16px 18px 20px;
+  }
+
+  .modal-large .generic-card {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .modal-large .generic-actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .modal-panel {
+    max-height: calc(100vh - 20px);
+    border-radius: 14px;
+  }
+
+  .modal-large .generic-info {
+    gap: 10px;
+  }
+
+  .modal-large .generic-id {
+    padding: 3px 8px;
+  }
+
+  .modal-large .generic-actions {
+    gap: 6px;
+  }
+}

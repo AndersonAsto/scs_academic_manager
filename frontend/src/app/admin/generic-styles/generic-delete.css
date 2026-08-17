@@ -1,0 +1,304 @@
+/* ==============================
+   Modal de eliminación
+   ============================== */
+
+.delete-modal {
+    max-width: 620px;
+}
+
+.delete-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ==============================
+   Advertencia principal
+   ============================== */
+
+.warning-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #fff4e5;
+    color: #c47a19;
+
+    font-size: 20px;
+}
+
+.delete-title {
+    text-align: center;
+
+    font-size: 17px;
+    font-weight: 700;
+    color: #1f2a1c;
+}
+
+.delete-description {
+    margin: -6px 0 0;
+
+    text-align: center;
+
+    font-size: 13px;
+    line-height: 1.6;
+    color: #667064;
+}
+
+.delete-description strong {
+    color: #1f2a1c;
+    font-weight: 700;
+}
+
+/* ==============================
+   Opciones de eliminación
+   ============================== */
+
+.delete-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.delete-option {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px;
+
+    border: 1px solid #e4e8e1;
+    border-radius: 12px;
+
+    background: #fafcf9;
+
+    transition:
+        border-color .2s,
+        background .2s,
+        box-shadow .2s;
+}
+
+.delete-option:hover {
+    border-color: #d5dbd1;
+    background: #fff;
+}
+
+/* ==============================
+   Icono de opción
+   ============================== */
+
+.option-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+}
+
+.deactivate-option .option-icon {
+    background: #fff4e5;
+    color: #b56c13;
+}
+
+.destroy-option .option-icon {
+    background: #fdf1ef;
+    color: #b3412f;
+}
+
+/* ==============================
+   Contenido de opción
+   ============================== */
+
+.option-content {
+    min-width: 0;
+}
+
+.option-content h3 {
+    margin: 0 0 5px;
+
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2a1c;
+}
+
+.option-content p {
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.5;
+    color: #667064;
+}
+
+.option-warning,
+.option-danger {
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.option-warning {
+    color: #9a671f;
+}
+
+.option-danger {
+    color: #b3412f;
+}
+
+/* ==============================
+   Botones de acción
+   ============================== */
+
+.btn-deactivate,
+.btn-delete {
+    border: none;
+    border-radius: 9px;
+
+    padding: 9px 14px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background .2s,
+        opacity .2s;
+}
+
+.btn-deactivate {
+    background: #f2e7d3;
+    color: #8a5b16;
+}
+
+.btn-deactivate:hover:not(:disabled) {
+    background: #ead9bc;
+}
+
+.btn-delete {
+    background: #b3412f;
+    color: white;
+}
+
+.btn-delete:hover:not(:disabled) {
+    background: #963524;
+}
+
+.btn-deactivate:disabled,
+.btn-delete:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* ==============================
+   Acciones inferiores
+   ============================== */
+
+.delete-content .modal-actions {
+    margin-top: 2px;
+    padding-top: 16px;
+
+    border-top: 1px solid #eef1ed;
+}
+
+/* ==============================
+   Responsive
+   ============================== */
+
+@media (max-width: 600px) {
+
+    .delete-modal {
+        max-width: 100%;
+    }
+
+    .delete-content {
+        padding: 20px;
+    }
+
+    .delete-option {
+        grid-template-columns: 38px 1fr;
+        gap: 12px;
+    }
+
+    .option-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .delete-option .btn-deactivate,
+    .delete-option .btn-delete {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+}
+
+.critical-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 20px 0;
+    padding: 16px 18px;
+    border: 1px solid #f0b429;
+    border-radius: 8px;
+    background: #fff8e1;
+}
+
+.critical-warning .option-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+    background: #fff0c2;
+    color: #b7791f;
+
+    font-size: 18px;
+}
+
+.critical-warning .option-content {
+    flex: 1;
+}
+
+.critical-warning .option-content h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #7a5200;
+}
+
+.critical-warning .option-content p {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #5f4b1f;
+}
+
+.critical-warning .option-content span {
+    display: block;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #806a32;
+}

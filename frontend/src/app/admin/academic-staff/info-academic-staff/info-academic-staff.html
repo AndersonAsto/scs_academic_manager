@@ -1,0 +1,147 @@
+@if (isOpen() && academicStaff()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle del Personal Académico</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ academicStaff()!.id }}</span>
+                <h3>{{ academicStaff()!.staff_type }}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!academicStaff()!.status">
+                        {{ academicStaff()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ academicStaff()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(academicStaff()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(academicStaff()!.updatedAt) }}</span>
+                </div>
+
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item full">
+                            <span class="info-label">Información Personal</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ academicStaff()!.personal_information.id }}</span>
+                                <span class="info-value"> {{ academicStaff()!.personal_information.names}} {{
+                                    academicStaff()!.personal_information.fathers_surname}}
+                                    {{academicStaff()!.personal_information.mothers_surname}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">DNI</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.dni || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Correo Electrónico</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.email || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">N° de Teléfono</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.phone_number || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Dirección</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.address || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Distrito</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.district || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Provincia</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.province || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Departamento</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.department || 'Sin datos registrados.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!academicStaff()!.personal_information.status">
+                                {{ academicStaff()!.personal_information.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                        <div class="info-item full">
+                            <span class="info-label">Descripción</span>
+                            <span class="info-value">{{ academicStaff()!.personal_information.description || 'Sin descripción registrada.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Creado</span>
+                            <span class="info-value">{{ formatDate(academicStaff()!.personal_information.createdAt) }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Última actualización</span>
+                            <span class="info-value">{{ formatDate(academicStaff()!.personal_information.updatedAt) }}</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+            <button
+                class="btn-secondary"
+                type="button"
+                (click)="downloadPdf()"
+                [disabled]="generatingPdf()">
+                @if (generatingPdf()) {
+                    Generando...
+                } @else {
+                    Descargar
+                }
+            </button>
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+
+    </div>
+</div>
+}

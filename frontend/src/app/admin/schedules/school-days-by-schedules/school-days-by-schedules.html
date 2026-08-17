@@ -1,0 +1,93 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onClose()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2>
+          Días Lectivos por Horario: 
+          {{ schedule()?.teacher_group?.academic_staff_contract?.academic_staff?.personal_information?.names }} 
+          {{ schedule()?.teacher_group?.academic_staff_contract?.academic_staff?.personal_information?.fathers_surname }}
+          | {{ schedule()?.day }} ({{ schedule()?.time_slot?.time_slot }})
+        </h2>
+        <button class="close-btn" (click)="onClose()" title="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        @if (loading()) {
+          <div class="state-message">
+            <p>Cargando días lectivos...</p>
+          </div>
+        } @else if (error()) {
+          <div class="state-message error">
+            <p>{{ error() }}</p>
+          </div>
+        } @else if (schoolDaysBySchedule().length === 0) {
+          <div class="state-message">
+            <p>Este horario no cuenta con días lectivos registrados.</p>
+          </div>
+        } @else {
+          <div class="generics-list">
+            @for (item of schoolDaysBySchedule(); track item.id) {
+              <div class="generic-card">
+                @if (editingSdByScheduleId() === item.id) {
+                  <div class="modal-form inline-edit">
+                    <div class="filter-select">
+                      <label>Tipo de Evaluación <span class="required">*</span></label>
+                      <select [(ngModel)]="editForm().type">
+                        @for (opt of typeOptions; track opt) {
+                          <option [value]="opt">{{ opt }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <label>Descripción</label>
+                      <textarea [(ngModel)]="editForm().description" rows="2" placeholder="Detalles u observaciones"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                      <button class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
+                      <button class="btn-primary" (click)="saveEdit(item.id)">Guardar</button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="generic-info">
+                    <span class="generic-id">
+                      Año {{ item.school_day.teaching_block.year.year }} | Bloque: {{ item.school_day.teaching_block.teaching_block }}
+                    </span>
+                    <div class="generic-content">
+                      <span class="generic-name">
+                        {{ item.school_day.day }} {{ item.school_day.school_day }} (Semana {{ item.school_day.week_number }})
+                      </span>
+                      <span class="generic-detail">
+                        <strong>Tipo de Actividad:</strong> {{ item.type }}
+                      </span>
+                      <span class="generic-detail">
+                        <strong>#Día Lectivo:</strong> {{ item.school_day_id }}
+                      </span>
+                      @if (item.description) {
+                        <span class="generic-detail">
+                          <strong>Obs:</strong> {{ item.description }}
+                        </span>
+                      }
+                      <span class="status-badge" [class.inactive]="!item.status">
+                        {{ item.status ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="generic-actions">
+                    <button class="icon-btn edit" (click)="startEdit(item)" title="Editar registro">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,229 @@
+@if (isOpen && data) {
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal-panel modal-large">
+        <div class="modal-header">
+            <h2>Editar Información - {{ isParent ? 'Apoderado' : 'Estudiante' }}</h2>
+            <button type="button" class="close-btn" (click)="onClose()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        @if (errorMessage()) {
+        <div class="state-message error">
+            {{ errorMessage() }}
+        </div>
+        }
+
+        <form class="modal-form" [formGroup]="form" (ngSubmit)="onSave()">
+            <div class="field">
+                <label>Nombres</label>
+                <input type="text" formControlName="names" />
+            </div>
+
+            <div class="field">
+                <label>Apellido Paterno</label>
+                <input type="text" formControlName="fathers_surname" />
+            </div>
+
+            <div class="field">
+                <label>Apellido Materno</label>
+                <input type="text" formControlName="mothers_surname" />
+            </div>
+
+            <div class="field">
+                <label>DNI</label>
+                <input type="text" formControlName="dni" maxlength="8" />
+            </div>
+
+            <div class="field">
+                <label>Correo Electrónico</label>
+                <input type="email" formControlName="email" />
+            </div>
+
+            <div class="field">
+                <label>Teléfono</label>
+                <input type="text" formControlName="phone_number" />
+            </div>
+
+            <div class="field">
+                <label>Dirección</label>
+                <input type="text" formControlName="address" />
+            </div>
+
+            <div class="field">
+                <label>Distrito</label>
+                <input type="text" formControlName="district" />
+            </div>
+
+            <div class="field">
+                <label>Provincia</label>
+                <input type="text" formControlName="province" />
+            </div>
+
+            <div class="field">
+                <label>Departamento</label>
+                <input type="text" formControlName="department" />
+            </div>
+
+            <div class="field">
+                <label>Género</label>
+                <select formControlName="gender">
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                </select>
+            </div>
+
+            @if (isParent) {
+            <div class="field">
+                <label>Usuario</label>
+                <input type="text" formControlName="username" />
+            </div>
+
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" formControlName="password" placeholder="Nueva contraseña" />
+            </div>
+
+            <div class="field">
+                <label>Rol</label>
+                <select formControlName="role">
+                    @for (r of roles; track r) {
+                    <option [value]="r">{{ r }}</option>
+                    }
+                </select>
+            </div>
+            }
+
+            <div class="field full-width">
+                <label>Descripción</label>
+                <textarea formControlName="description" rows="2"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" (click)="onClose()" [disabled]="loading()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="loading()">
+                    {{ loading() ? 'Guardando...' : 'Guardar Cambios' }}
+                </button>
+            </div>
+
+
+        </form>
+
+        <div class="status-management">
+
+            <div class="status-management-header">
+
+                <div>
+                    <h3>Estado del registro</h3>
+
+                    <p>
+                        Gestiona la disponibilidad de los datos
+                        {{ isParent ? 'del apoderado' : 'del estudiante' }}
+                        en el sistema.
+                    </p>
+                </div>
+
+                <span class="status-badge" [class.inactive]="!isActive()">
+                    {{ isActive() ? 'Activo' : 'Inactivo' }}
+                </span>
+
+            </div>
+
+            @if (isActive()) {
+
+            <div class="critical-warning">
+
+                <div class="option-icon">
+                    <i class="fa-solid fa-user-slash"></i>
+                </div>
+
+                <div class="option-content">
+
+                    <h3>
+                        Desactivar {{ isParent ? 'apoderado' : 'estudiante' }}
+                    </h3>
+
+                    <p>
+                        Los datos permanecerán almacenados en el sistema,
+                        pero el registro dejará de estar activo.
+                    </p>
+
+                    <span>
+                        @if (isParent) {
+
+                        También se desactivará su información personal
+                        y su cuenta de usuario. Las matrículas existentes
+                        no serán eliminadas.
+
+                        } @else {
+
+                        También se desactivará la información personal
+                        asociada al estudiante. Las matrículas y demás
+                        registros relacionados no serán eliminados
+                        automáticamente.
+
+                        }
+                    </span>
+
+                </div>
+
+                <button type="button" class="btn-deactivate" (click)="onDeactivate()" [disabled]="submittingStatus()">
+
+                    {{ submittingStatus() ? 'Procesando...' : 'Desactivar' }}
+
+                </button>
+
+            </div>
+
+            } @else {
+
+            <div class="restore-option">
+
+                <div class="option-icon">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </div>
+
+                <div class="option-content">
+
+                    <h3>
+                        Restaurar {{ isParent ? 'apoderado' : 'estudiante' }}
+                    </h3>
+
+                    <p>
+                        El registro volverá a estar activo y podrá ser
+                        utilizado nuevamente por el sistema.
+                    </p>
+
+                    <span>
+                        @if (isParent) {
+
+                        Se reactivará el apoderado, su información
+                        personal y su usuario asociado.
+
+                        } @else {
+
+                        Se reactivará el estudiante y su información
+                        personal asociada.
+
+                        }
+                    </span>
+
+                </div>
+
+                <button type="button" class="btn-restore" (click)="onRestore()" [disabled]="submittingStatus()">
+
+                    {{ submittingStatus() ? 'Procesando...' : 'Restaurar' }}
+
+                </button>
+
+            </div>
+
+            }
+
+        </div>
+
+    </div>
+</div>
+}

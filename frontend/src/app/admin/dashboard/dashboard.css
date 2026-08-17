@@ -1,0 +1,256 @@
+@import url('../generic-styles/generic-styles.css');
+@import url('../generic-styles/generic-filter.css');
+
+/* ============================================
+   Dashboard — tarjetas de métricas
+   ============================================ */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.stat-mini-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid #e2e6e0;
+    border-radius: 14px;
+    padding: 20px 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .04);
+}
+
+.stat-mini-card i {
+    font-size: 20px;
+    color: #4f7a42;
+}
+
+.stat-mini-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1f2a1c;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-mini-label {
+    font-size: 12px;
+    color: #6b7a67;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Barras de matriculados por grado/sección */
+
+.bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 32px;
+    align-items: center;
+    gap: 10px;
+}
+
+.bar-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2a1c;
+}
+
+.bar-track {
+    height: 10px;
+    background: #eef1ed;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #4f7a42;
+    border-radius: 6px;
+    transition: width .3s ease;
+}
+
+.bar-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4a5a46;
+    text-align: right;
+}
+
+/* Reportes rápidos */
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.quick-link-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid #dfe5dc;
+    border-radius: 12px;
+    background: #fafcf9;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2a1c;
+    text-align: left;
+    transition: border-color .15s, background .15s;
+}
+
+.quick-link-card:hover {
+    border-color: #4f7a42;
+    background: rgba(79, 122, 66, .06);
+}
+
+.quick-link-card i {
+    font-size: 18px;
+    color: #4f7a42;
+}
+
+.group-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.group-summary-card {
+    border: 1px solid #e2e6e0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: #fafcf9;
+}
+
+.group-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.group-summary-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2a1c;
+}
+
+.group-summary-metrics {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.group-summary-metric {
+    font-size: 12px;
+    color: #4a5a46;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.group-summary-metric i {
+    color: #4f7a42;
+}
+
+
+.bar-row-button {
+    border: 1px solid transparent;
+    background: none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 4px 6px;
+    width: 100%;
+    text-align: left;
+    transition: background .15s, border-color .15s;
+}
+
+.bar-row-button:hover {
+    background: rgba(79, 122, 66, .06);
+}
+
+.bar-row-button.active {
+    border-color: #4f7a42;
+    background: rgba(79, 122, 66, .08);
+}
+
+.group-detail-panel {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #dfe5dc;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.group-detail-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.chart-card {
+    background: white;
+    border: 1px solid #e2e6e0;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.chart-card-title {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4a5a46;
+    margin-bottom: 8px;
+}
+
+.course-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.course-chip {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid #dfe5dc;
+    background: #fafcf9;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2a1c;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+}
+
+.course-chip:hover {
+    border-color: #4f7a42;
+}
+
+.course-chip.selected {
+    background: #4f7a42;
+    border-color: #4f7a42;
+    color: white;
+}
+
+.course-detail-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.course-detail-metrics {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}

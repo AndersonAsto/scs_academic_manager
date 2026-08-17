@@ -1,0 +1,189 @@
+@if (isOpen()) {
+
+<div class="modal-backdrop" (click)="onBackdropClick()">
+
+    <div
+        class="modal-panel delete-modal"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h2>Eliminar Personal Académico</h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                (click)="onClose()"
+                [disabled]="submitting()"
+                aria-label="Cerrar">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="delete-content">
+
+            <div class="warning-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3 class="delete-title">
+                ¿Qué desea hacer con este personal académico?
+            </h3>
+
+            <p class="delete-description">
+
+                Personal seleccionado:
+
+                <strong>
+                    {{ academicStaff()?.personal_information?.names }}
+                    {{ academicStaff()?.personal_information?.fathers_surname }}
+                    {{ academicStaff()?.personal_information?.mothers_surname }}
+                </strong>
+
+            </p>
+
+            <div class="critical-warning">
+
+                <div class="option-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+
+                <div class="option-content">
+
+                    <h3>
+                        Registro relacionado con múltiples procesos
+                    </h3>
+
+                    <p>
+                        El personal académico está relacionado con
+                        información personal, usuario del sistema,
+                        contratos y grupos de docente.
+                    </p>
+
+                    <span>
+                        Desactivar este registro también desactivará
+                        su información personal, usuario y todos sus
+                        contratos académicos. Los grupos de docente
+                        relacionados dejarán de contar con un personal
+                        académico activo.
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="delete-options">
+
+                <!-- DESACTIVACIÓN -->
+
+                <div class="delete-option deactivate-option">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </div>
+
+                    <div class="option-content">
+
+                        <h3>
+                            Desactivar personal académico
+                        </h3>
+
+                        <p>
+                            El personal académico quedará inactivo
+                            junto con su información personal,
+                            usuario y contratos registrados.
+                        </p>
+
+                        <span class="option-warning">
+                            Los registros permanecerán almacenados
+                            y podrán ser reactivados posteriormente.
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-deactivate"
+                        (click)="onDelete(0)"
+                        [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Desactivar' }}
+
+                    </button>
+
+                </div>
+
+                <!-- ELIMINACIÓN DEFINITIVA -->
+
+                <div class="delete-option destroy-option">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+
+                    <div class="option-content">
+
+                        <h3>
+                            Eliminar definitivamente
+                        </h3>
+
+                        <p>
+                            El personal académico, su usuario y su
+                            información personal serán eliminados
+                            permanentemente.
+                        </p>
+
+                        <span class="option-danger">
+                            Solo es posible realizar esta operación
+                            si el personal no posee contratos registrados.
+                            Esta acción no se puede deshacer.
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-delete"
+                        (click)="onDelete(1)"
+                        [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Eliminar' }}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            @if (errorMessage()) {
+
+            <div class="form-error">
+                {{ errorMessage() }}
+            </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="onClose()"
+                    [disabled]="submitting()">
+
+                    Cancelar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

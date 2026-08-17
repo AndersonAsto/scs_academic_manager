@@ -1,0 +1,322 @@
+@if (isOpen() && teacherGroup()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle del Grupo de Docente</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ teacherGroup()!.id }}</span>
+                <h3>{{teacherGroup()!.academic_staff_contract.academic_staff.staff_type}} | Tutor: {{
+                    teacherGroup()!.tutor ? 'Si' : 'No' }}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!teacherGroup()!.status">
+                        {{ teacherGroup()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ teacherGroup()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(teacherGroup()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(teacherGroup()!.updatedAt) }}</span>
+                </div>
+
+                <!--curso-->
+                <div class="info-item full">
+                    <div class="info-grid-2">
+                        <div class="info-item">
+                            <span class="info-label">Curso</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ teacherGroup()!.course.id }}</span>
+                                <span class="info-value"> {{ teacherGroup()!.course.course}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!teacherGroup()!.course.status">
+                                {{ teacherGroup()!.course.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!--grado-->
+                <div class="info-item full">
+                    <div class="info-grid-2">
+                        <div class="info-item">
+                            <span class="info-label">Grado</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ teacherGroup()!.grade.id }}</span>
+                                <span class="info-value"> {{ teacherGroup()!.grade.grade}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!teacherGroup()!.grade.status">
+                                {{ teacherGroup()!.grade.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!--seccion-->
+                <div class="info-item full">
+                    <div class="info-grid-2">
+                        <div class="info-item">
+                            <span class="info-label">Sección</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ teacherGroup()!.section.id }}</span>
+                                <span class="info-value"> {{ teacherGroup()!.section.section}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!teacherGroup()!.section.status">
+                                {{ teacherGroup()!.section.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!--contratos-->
+                <div class="info-item full">
+                    <div class="info-grid-2">
+                        <div class="info-item full">
+                            <span class="info-label">Contrato del Personal Académico</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ teacherGroup()!.academic_staff_contract.id}}</span>
+                                <span class="info-value"> {{teacherGroup()!.academic_staff_contract.year.year}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Inicio de Contrato</span>
+                            <span class="info-value">{{ teacherGroup()!.academic_staff_contract.start_date }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Fin de Contrato</span>
+                            <span class="info-value">{{ teacherGroup()!.academic_staff_contract.end_date }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Cargo</span>
+                            <span class="info-value">{{ teacherGroup()!.academic_staff_contract.position || 'Sin cargo asignado.' }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!teacherGroup()!.academic_staff_contract.status">
+                                {{ teacherGroup()!.academic_staff_contract.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                        <div class="info-item full">
+                            <span class="info-label">Descripción</span>
+                            <span class="info-value">{{ teacherGroup()!.academic_staff_contract.description || 'Sin descripción resgistrada.' }}</span>
+                        </div>
+
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+
+                                <div class="info-item full">
+                                    <span class="info-label">Personal Académico</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{
+                                            teacherGroup()!.academic_staff_contract.academic_staff.id
+                                            }}</span>
+                                        <span class="info-value"> {{
+                                            teacherGroup()!.academic_staff_contract.academic_staff.staff_type}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!teacherGroup()!.academic_staff_contract.academic_staff.status">
+                                        {{
+                                        teacherGroup()!.academic_staff_contract.academic_staff.status
+                                        ?
+                                        'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+
+                                <div class="info-item full">
+                                    <span class="info-label">Descripción</span>
+                                    <span class="info-value">{{
+                                        teacherGroup()!.academic_staff_contract.academic_staff.description
+                                        || 'Sin descripción registrada.'
+                                        }}</span>
+                                </div>
+                                
+                                <div class="info-item full">
+                                    <div class="info-grid-4">
+
+                                        <div class="info-item full">
+                                            <span class="info-label">Información Personal</span>
+                                            <div class="info-title">
+                                                <span class="info-id">#{{
+                                                    teacherGroup()!.academic_staff_contract.academic_staff.personal_information.id
+                                                    }}</span>
+                                                <span class="info-value"> {{
+                                                    teacherGroup()!.academic_staff_contract.academic_staff.personal_information.names}}
+                                                    {{
+                                                    teacherGroup()!.academic_staff_contract.academic_staff.personal_information.fathers_surname}}
+                                                    {{teacherGroup()!.academic_staff_contract.academic_staff.personal_information.mothers_surname}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">DNI</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.dni
+                                                ||
+                                                'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Correo Electrónico</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.email
+                                                ||
+                                                'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">N° de Teléfono</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.phone_number
+                                                || 'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Dirección</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.address
+                                                || 'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Distrito</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.district
+                                                || 'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Provincia</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.province
+                                                || 'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Departamento</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.department
+                                                || 'Sin datos registrados.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Estado</span>
+                                            <span class="status-badge"
+                                                [class.inactive]="!teacherGroup()!.academic_staff_contract.academic_staff.personal_information.status">
+                                                {{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.status
+                                                ?
+                                                'Activo' : 'Inactivo' }}
+                                            </span>
+                                        </div>
+
+                                        <div class="info-item full">
+                                            <span class="info-label">Descripción</span>
+                                            <span class="info-value">{{
+                                                teacherGroup()!.academic_staff_contract.academic_staff.personal_information.description
+                                                || 'Sin descripción registrada.'
+                                                }}</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                
+                            </div>
+                        </div>
+
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item">
+                                    <span class="info-label">Año Lectivo</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ teacherGroup()!.academic_staff_contract.year.id
+                                            }}</span>
+                                        <span class="info-value"> {{
+                                            teacherGroup()!.academic_staff_contract.year.year}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!teacherGroup()!.academic_staff_contract.year.status">
+                                        {{ teacherGroup()!.academic_staff_contract.year.status ? 'Activo' : 'Inactivo'
+                                        }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="modal-actions">
+            <button
+                class="btn-secondary"
+                type="button"
+                (click)="downloadPdf()"
+                [disabled]="generatingPdf()"
+                aria-label="Generar PDF"
+            >
+                @if (generatingPdf()) {
+                    Generando...
+                } @else {
+                    Descargar
+                }
+            </button>
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+    </div>
+</div>
+}

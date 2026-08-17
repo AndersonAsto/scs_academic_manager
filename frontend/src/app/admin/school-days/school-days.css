@@ -1,0 +1,8 @@
+@import url('../generic-styles/generic-styles.css');
+@import url('../generic-styles/generic-filter.css');
+
+.school-days-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

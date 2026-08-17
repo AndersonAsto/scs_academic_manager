@@ -1,0 +1,405 @@
+@if (isOpen()) {
+
+<div class="modal-backdrop" (click)="closeModal.emit()">
+
+    <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h2>
+                {{ isEditMode
+                ? 'Actualizar Personal Académico'
+                : 'Registrar Personal Académico' }}
+            </h2>
+
+            <button type="button" class="close-btn" (click)="closeModal.emit()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <form class="modal-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+            @if(!isEditMode){
+
+            <div class="field">
+
+                <label>
+                    Tipo de registro
+                </label>
+
+                <div class="radio-group">
+
+                    <label>
+
+                        <input type="radio" [checked]="!isExistingPerson()" (change)="isExistingPerson.set(false)">
+
+                        Nuevo personal
+
+                    </label>
+
+                    <label>
+
+                        <input type="radio" [checked]="isExistingPerson()" (change)="isExistingPerson.set(true)">
+
+                        Recontratación
+
+                    </label>
+
+                </div>
+
+            </div>
+
+            }
+
+            @if(!isEditMode && isExistingPerson()){
+
+            <div class="field">
+
+                <label>
+                    Tipo de personal
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-user-tag"></i>
+
+                    <select formControlName="role">
+
+                        <option value="">
+                            Seleccione...
+                        </option>
+
+                        <option value="Administrador">
+                            Administrador
+                        </option>
+
+                        <option value="Docente">
+                            Docente
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+
+                    Personal académico
+                    <span class="required">*</span>
+
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <select (change)="onAcademicStaffSelected(+$any($event.target).value)">
+
+                        <option value="">
+                            Seleccione...
+                        </option>
+
+                        @for(staff of academicStaffList(); track staff.id){
+
+                        @if(staff.staff_type === form.value.role){
+
+                        <option [value]="staff.id">
+
+                            {{
+                            staff.personal_information.names
+                            + ' ' +
+                            staff.personal_information.fathers_surname
+                            + ' ' +
+                            staff.personal_information.mothers_surname
+                            }}
+
+                        </option>
+
+                        }
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            }
+
+            <div class="readonly-group">
+
+                <div class="section-title">
+                    Información Personal
+                </div>
+
+                <div class="readonly-grid">
+
+                    <div class="field">
+
+                        <label>Nombres</label>
+
+                        <input type="text" formControlName="names" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Apellido paterno</label>
+
+                        <input type="text" formControlName="fathers_surname"
+                            [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Apellido materno</label>
+
+                        <input type="text" formControlName="mothers_surname"
+                            [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>DNI</label>
+
+                        <input type="text" formControlName="dni" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Correo</label>
+
+                        <input type="email" formControlName="email" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Teléfono</label>
+
+                        <input type="text" formControlName="phone_number"
+                            [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Dirección</label>
+
+                        <input type="text" formControlName="address" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Distrito</label>
+
+                        <input type="text" formControlName="district" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Provincia</label>
+
+                        <input type="text" formControlName="province" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Departamento</label>
+
+                        <input type="text" formControlName="department" [readonly]="isExistingPerson() && !isEditMode">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Género</label>
+
+                        <div class="filter-select">
+                            <select formControlName="gender" [disabled]="isExistingPerson() && !isEditMode">
+
+                                <option value="">
+                                    Seleccione...
+                                </option>
+
+                                <option value="M">
+                                    Masculino
+                                </option>
+
+                                <option value="F">
+                                    Femenino
+                                </option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                    @if(!isExistingPerson() || isEditMode){
+
+                    <div class="field">
+
+                        <label>
+
+                            Tipo de personal
+
+                        </label>
+
+                        <div class="filter-select">
+                            <select formControlName="role">
+
+                                <option value="">
+                                    Seleccione...
+                                </option>
+
+                                <option value="Administrador">
+                                    Administrador
+                                </option>
+
+                                <option value="Docente">
+                                    Docente
+                                </option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                    }
+
+                </div>
+
+            </div>
+
+            @if(!isEditMode){
+
+            <div class="readonly-group">
+
+                <div class="section-title">
+                    Información del Contrato
+                </div>
+
+                <div class="readonly-grid">
+
+                    <div class="field">
+
+                        <label>
+
+                            Cargo
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input type="text" formControlName="position">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+
+                            Fecha de inicio
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input type="date" formControlName="start_date">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+
+                            Fecha de fin
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input type="date" formControlName="end_date">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            }
+
+            <div class="field">
+
+                <label>
+
+                    Descripción
+
+                </label>
+
+                <textarea rows="3" formControlName="description" placeholder="Opcional">
+
+                </textarea>
+
+            </div>
+
+            @if(errorMessage){
+
+            <div class="form-error">
+
+                {{ errorMessage }}
+
+            </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button type="button" class="btn-secondary" (click)="closeModal.emit()">
+
+                    Cancelar
+
+                </button>
+
+                <button class="btn-primary" type="submit" [disabled]="submitting">
+
+                    @if(submitting){
+
+                    <span>
+                        Guardando...
+                    </span>
+
+                    } @else {
+
+                    <span>
+
+                        {{ isEditMode
+                        ? 'Guardar cambios'
+                        : 'Registrar personal' }}
+
+                    </span>
+
+                    }
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+}

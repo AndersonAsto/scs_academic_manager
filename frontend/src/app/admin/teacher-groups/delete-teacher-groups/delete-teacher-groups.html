@@ -1,0 +1,196 @@
+@if (isOpen() && teacherGroup()) {
+
+<div class="modal-backdrop" (click)="onClose()">
+
+    <div
+        class="modal-panel delete-modal"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h2>Eliminar Grupo de Docente</h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                (click)="onClose()"
+                [disabled]="submitting()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="delete-content">
+
+            <div class="warning-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3 class="delete-title">
+                ¿Qué desea hacer con este grupo de docente?
+            </h3>
+
+            <p class="delete-description">
+
+                Está gestionando el grupo:
+
+                <strong>
+                    #{{ teacherGroup()!.id }}
+                </strong>
+
+                <br>
+
+                <strong>
+                    {{ teacherGroup()!.course.course }}
+                </strong>
+
+                -
+                
+                <strong>
+                    {{ teacherGroup()!.grade.grade }}
+                    {{ teacherGroup()!.section.section }}
+                </strong>
+
+                <br>
+
+                Año lectivo:
+                
+                <strong>
+                    {{ teacherGroup()!.academic_staff_contract.year.year }}
+                </strong>
+
+            </p>
+
+            <div class="critical-warning">
+
+                <div class="option-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+
+                <div class="option-content">
+
+                    <h3>Registro importante del sistema</h3>
+
+                    <p>
+                        Los grupos de docente son utilizados por otros
+                        procesos académicos del sistema.
+                    </p>
+
+                    <span>
+                        Esta información es fundamental para la gestión
+                        de horarios, sesiones lectivas y registro académico.
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="delete-options">
+
+                <!-- DESACTIVACIÓN -->
+
+                <div class="delete-option deactivate-option">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </div>
+
+                    <div class="option-content">
+
+                        <h3>Desactivar grupo</h3>
+
+                        <p>
+                            El grupo dejará de estar activo, pero permanecerá
+                            almacenado en el sistema.
+                        </p>
+
+                        <span class="option-warning">
+                            Esta es la opción recomendada si el grupo
+                            ya no debe utilizarse.
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-deactivate"
+                        (click)="onDelete(0)"
+                        [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Desactivar' }}
+
+                    </button>
+
+                </div>
+
+
+                <!-- ELIMINACIÓN DEFINITIVA -->
+
+                <div class="delete-option destroy-option">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+
+                    <div class="option-content">
+
+                        <h3>Eliminar definitivamente</h3>
+
+                        <p>
+                            El grupo será eliminado completamente de la
+                            base de datos.
+                        </p>
+
+                        <span class="option-danger">
+                            Esta acción es permanente y puede afectar
+                            información relacionada con horarios,
+                            sesiones lectivas y registros académicos.
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-delete"
+                        (click)="onDelete(1)"
+                        [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Eliminar' }}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            @if (errorMessage()) {
+
+            <div class="form-error">
+                {{ errorMessage() }}
+            </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="onClose()"
+                    [disabled]="submitting()">
+
+                    Cancelar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

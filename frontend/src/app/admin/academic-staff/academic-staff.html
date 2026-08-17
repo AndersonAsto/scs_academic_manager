@@ -1,0 +1,155 @@
+<div class="academic-staff-page">
+
+    <div class="page-header-hero">
+        <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <circle cx="520" cy="30" r="70" class="decor-circle" />
+            <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+            <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+            <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+            <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+            <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+        </svg>
+
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div>
+                <h1>Personal Académico</h1>
+                <p class="subtitle">Gestiona el personal académico de la institución educativa, incluyendo sus contratos e
+                información personal.</p>
+            </div>
+        </div>
+
+        <button class="btn-hero" (click)="onAdd()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Personal Académico</span>
+        </button>
+    </div>
+
+    <div class="filters-container">
+
+        <div class="filters-header">
+            <i class="fa-solid fa-filter"></i>
+            <span>Filtros</span>
+        </div>
+
+        <div class="filters-content">
+
+            <!-- Buscador -->
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar personal académico, DNI, correo, teléfono o fechas..."
+                    [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+            </div>
+
+            <!-- Tipo de Personal -->
+            <div class="filter-select">
+                <i class="fa-solid fa-user-tie"></i>
+
+                <select [ngModel]="selectedStaffType()" (ngModelChange)="selectedStaffType.set($event)">
+                    <option [ngValue]="null">
+                        Todo el personal
+                    </option>
+
+                    @for(type of staffTypes(); track type){
+                    <option [ngValue]="type">
+                        {{ type }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <button class="btn-clear" (click)="clearFilters()">
+                <i class="fa-solid fa-rotate-left"></i>
+                Limpiar
+            </button>
+
+        </div>
+
+    </div>
+
+    @if (loading()) {
+    <div class="state-message">Cargando ...</div>
+    } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+    } @else if (filteredAcademicStaff().length === 0) {
+    <div class="state-message">No se encontro el personal académico.</div>
+    } @else {
+    <div class="generics-list">
+        @for (academicStaff of filteredAcademicStaff(); track academicStaff.id) {
+        <div class="generic-card">
+            <div class="generic-info">
+                <span class="generic-id">
+                    #{{ academicStaff.id }}
+                </span>
+                <div class="generic-content">
+                    <span class="generic-name">
+                        {{ academicStaff.staff_type }}: {{ academicStaff.personal_information.names + '
+                        '
+                        +
+                        academicStaff.personal_information.fathers_surname + ' ' +
+                        academicStaff.personal_information.mothers_surname }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="generic-actions">
+                <div class="info-item">
+                    <span class="status-badge" [class.inactive]="!academicStaff.status">
+                        {{ academicStaff.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+                <button class="icon-btn info" (click)="onContracts(academicStaff)" aria-label="Contratos">
+                    <i class="fa-solid fa-file-contract"></i>
+                </button>
+                <button class="icon-btn info" (click)="onUsers(academicStaff)" aria-label="Usuario">
+                    <i class="fa-solid fa-users-gear"></i>
+                </button>
+                <button class="icon-btn info" (click)="onInfo(academicStaff)" aria-label="Más información">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+                <button class="icon-btn edit" (click)="onEdit(academicStaff)" aria-label="Actualizar">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                
+                @if (academicStaff.status) {
+
+                <button class="icon-btn delete" (click)="onDelete(academicStaff)" aria-label="Eliminar">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+                } @else {
+
+                <button class="icon-btn restore" (click)="onRestore(academicStaff)" aria-label="Reactivar">
+
+                    <i class="fa-solid fa-power-off"></i>
+
+                </button>
+
+                }
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+
+</div>
+
+<app-create-update-academic-staff [isOpen]="isFormModalOpen()" [academicStaff]="academicStaffToEdit()"
+    (closeModal)="onCloseFormModal()" (saved)="onSaved()" />
+
+<app-info-academic-staff [isOpen]="isInfoModalOpen()" [academicStaff]="academicStaffToView()"
+    (closeModal)="onCloseInfoModal()" />
+
+<app-academic-staff-contracts [isOpen]="isContractsModalOpen()" [academicStaff]="academicStaffContractsToView()"
+    (closeModal)="onCloseContractsModal()" />
+
+<app-academic-staff-users [isOpen]="isUsersModalOpen()" [academicStaff]="academicStaffUserToView()"
+    (closeModal)="onCloseUsersModal()" />
+
+<app-delete-academic-staff [isOpen]="isDeleteModalOpen()" [academicStaff]="academicStaffToDelete()"
+    (closeModal)="onCloseDeleteModal()" (deleted)="onDeleted()" />

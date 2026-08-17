@@ -1,0 +1,86 @@
+@if (isOpen() && teachingBlock()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle del Bloque Lectivo</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ teachingBlock()!.id }}</span>
+                <h3>{{ teachingBlock()!.teaching_block }}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Fecha de Inicio</span>
+                    <span class="info-value">{{ teachingBlock()!.start_day }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Fecha de Finalización</span>
+                    <span class="info-value">{{ teachingBlock()!.end_day }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!teachingBlock()!.status">
+                        {{ teachingBlock()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ teachingBlock()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(teachingBlock()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(teachingBlock()!.updatedAt) }}</span>
+                </div>
+
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item">
+                            <span class="info-label">Año Lectivo</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ teachingBlock()!.year.id }}</span>
+                                <span class="info-value"> {{ teachingBlock()!.year.year}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!teachingBlock()!.year.status">
+                                {{ teachingBlock()!.year.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+
+    </div>
+</div>
+}

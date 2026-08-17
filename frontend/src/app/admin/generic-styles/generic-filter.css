@@ -1,0 +1,85 @@
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e3e8e1;
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .04);
+}
+
+.filters-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #355c2d;
+}
+
+.filters-header i {
+    font-size: 15px;
+}
+
+select,
+::picker(select) {
+    appearance: base-select;
+}
+
+.filters-content {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 1px solid #dfe5dc;
+    border-radius: 12px;
+    padding: 0 14px;
+    height: 46px;
+}
+
+.filter-select i {
+    color: #72816d;
+}
+
+.filter-select select {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #1f2a1c;
+    cursor: pointer;
+}
+
+.btn-clear {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 12px;
+    background: #eef3ec;
+    color: #4f7a42;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-clear:hover {
+    background: #4f7a42;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 320px;
+}

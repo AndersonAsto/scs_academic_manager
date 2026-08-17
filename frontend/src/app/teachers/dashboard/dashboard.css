@@ -1,0 +1,6 @@
+@import url('../../admin/dashboard/dashboard.css');
+
+.course-chip i {
+    margin-left: 6px;
+    font-size: 10px;
+}

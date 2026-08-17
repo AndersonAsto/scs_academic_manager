@@ -1,0 +1,268 @@
+@if (isOpen()) {
+
+<div class="modal-backdrop" (click)="closeModal.emit()">
+
+    <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>
+                {{ isEditMode ? 'Actualizar Grupo de Docente' : 'Nuevo Grupo de Docente' }}
+            </h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                (click)="closeModal.emit()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+        </div>
+
+        <form
+            class="modal-form"
+            [formGroup]="form"
+            (ngSubmit)="onSubmit()">
+
+            <div class="field">
+
+                <label>
+                    Año Lectivo
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-calendar"></i>
+
+                    <select
+                        formControlName="year_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(year of years(); track year.id){
+
+                        <option [value]="year.id">
+                            {{ year.year }}
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Docente
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <select formControlName="academic_staff_contract_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(contract of contractsByYear(); track contract.id){
+
+                        <option [ngValue]="contract.id">
+
+                            {{ getContractName(contract) }}
+
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Curso
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    <select formControlName="course_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(course of courses(); track course.id){
+
+                        <option [ngValue]="course.id">
+
+                            {{ course.course }}
+
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Grado
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-graduation-cap"></i>
+
+                    <select formControlName="grade_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(grade of grades(); track grade.id){
+
+                        <option [ngValue]="grade.id">
+
+                            {{ grade.grade }}
+
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Sección
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                    <select formControlName="section_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(section of sections(); track section.id){
+
+                        <option [ngValue]="section.id">
+
+                            {{ section.section }}
+
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        formControlName="tutor">
+
+                    Tutor del grupo
+
+                </label>
+
+            </div>
+
+            <div class="field">
+
+                <label>Descripción</label>
+
+                <textarea
+                    rows="3"
+                    formControlName="description"
+                    placeholder="Opcional">
+
+                </textarea>
+
+            </div>
+
+            @if(errorMessage){
+
+            <div class="form-error">
+
+                {{ errorMessage }}
+
+            </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="closeModal.emit()">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn-primary"
+                    type="submit"
+                    [disabled]="submitting">
+
+                    @if(submitting){
+
+                    <span>Guardando...</span>
+
+                    } @else {
+
+                    <span>
+
+                        {{ isEditMode ? 'Guardar cambios' : 'Crear grupo' }}
+
+                    </span>
+
+                    }
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+}

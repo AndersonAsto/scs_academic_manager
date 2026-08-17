@@ -1,0 +1,204 @@
+<div class="generics-page">
+
+  <div class="page-header-hero">
+    <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <circle cx="520" cy="30" r="70" class="decor-circle" />
+      <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+      <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+      <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+      <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+      <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+      </div>
+      <div>
+        <h1>Registro Académico</h1>
+        <p class="subtitle">Registra asistencia y calificaciones del día seleccionado.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-filter"></i>
+      Filtros
+    </div>
+
+    <div class="filters-content">
+      <div class="filter-select">
+        <i class="fa-solid fa-calendar-days"></i>
+        <select (change)="onContractChange(+$any($event.target).value)">
+          <option value="" disabled selected>Año (contrato)</option>
+          @for (contract of contracts(); track contract.id) {
+          <option [value]="contract.id">{{ contract.year }} — {{ contract.position }}</option>
+          }
+        </select>
+      </div>
+
+      @if (teacherGroups().length > 0) {
+      <div class="filter-select">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <select (change)="onTeacherGroupChange(+$any($event.target).value)">
+          <option value="" disabled selected>Curso / grado / sección</option>
+          @for (group of teacherGroups(); track group.id) {
+          <option [value]="group.id">{{ group.course }} — {{ group.grade }} {{ group.section }}</option>
+          }
+        </select>
+      </div>
+      }
+
+      @if (schedules().length > 0) {
+      <div class="filter-select">
+        <i class="fa-solid fa-clock"></i>
+        <select (change)="onScheduleChange(+$any($event.target).value)">
+          <option value="" disabled selected>Horario</option>
+          @for (schedule of schedules(); track schedule.id) {
+          <option [value]="schedule.id">
+            {{ schedule.day }} — {{ schedule.time_slot }} ({{ schedule.start_time }}-{{ schedule.end_time }})
+          </option>
+          }
+        </select>
+      </div>
+      }
+
+      @if (selectedScheduleId()) {
+      <button type="button" class="filter-trigger" (click)="openCalendar()">
+        <i class="fa-solid fa-calendar-days"></i>
+        {{ selectedDay() ? 'Cambiar día' : 'Seleccionar día lectivo' }}
+      </button>
+      }
+
+      @if (selectedDay(); as day) {
+      <div class="selected-day-chip">
+        <i class="fa-solid fa-calendar-check"></i>
+        {{ day.date }} · {{ day.day }}
+      </div>
+
+      <div class="selected-day-chip type-chip" [attr.data-type]="day.type">
+        <i class="fa-solid fa-tag"></i>
+        {{ day.type }}
+      </div>
+
+      <button type="button" class="btn-primary" (click)="loadStudents()" [disabled]="isLoadingStudents()">
+        <i class="fa-solid fa-users"></i>
+        {{ isLoadingStudents() ? 'Cargando...' : 'Cargar estudiantes' }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Modal calendario -->
+  @if (showCalendarModal()) {
+  <div class="modal-backdrop" (click)="closeCalendar()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Selecciona el día lectivo</h2>
+        <button type="button" class="close-btn" (click)="closeCalendar()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (lectiveDays().length === 0) {
+        <p class="state-message">No hay días lectivos registrados para este horario.</p>
+        } @else {
+        <div class="day-grid">
+          @for (day of lectiveDays(); track day.id) {
+          <button type="button" class="day-card" [class.selected]="selectedDay()?.id === day.id"
+            (click)="selectDay(day)">
+            <span class="day-card-date">{{ day.date }}</span>
+            <span class="day-card-label">{{ day.day }}</span>
+            <span class="day-card-week">Semana {{ day.week_number }}</span>
+            <span class="day-card-block">{{ day.teaching_block }}</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeCalendar()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  @if (students().length > 0) {
+  <div class="filters-container">
+    <div class="filter-select">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input
+        type="text"
+        class="table-input"
+        placeholder="Buscar por nombres o apellidos..."
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+      />
+    </div>
+  </div>
+  }
+
+  <!-- Tabla de estudiantes -->
+  @if (isLoadingStudents()) {
+  <p class="state-message">Cargando estudiantes...</p>
+  } @else if (students().length > 0) {
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Asistencia</th>
+          <th>Calificación</th>
+          <th>Incidencia</th>
+          <th>Observación</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (student of filteredStudents(); track student.registration_id) {
+        <tr>
+          <td class="student-name">
+            {{ student.fathers_surname }} {{ student.mothers_surname }}, {{ student.names }}
+          </td>
+          <td>
+            <select class="table-select" [class]="'attendance-' + (student.attendance ?? 'none')"
+              [(ngModel)]="student.attendance" [ngModelOptions]="{ standalone: true }">
+              <option [ngValue]="null">—</option>
+              @for (option of attendanceOptions; track option.value) {
+              <option [ngValue]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </td>
+          <td>
+            <input class="table-input score-input" type="number" min="0" max="20" step="0.5" placeholder="—"
+              [(ngModel)]="student.score" [ngModelOptions]="{ standalone: true }" />
+          </td>
+          <td>
+            <input class="table-input" type="text" placeholder="Sin incidencia" [(ngModel)]="student.incident"
+              [ngModelOptions]="{ standalone: true }" />
+          </td>
+          <td>
+            <input class="table-input" type="text" placeholder="Sin observación" [(ngModel)]="student.description"
+              [ngModelOptions]="{ standalone: true }" />
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    <span class="subtitle">{{ filteredStudents().length }} de {{ students().length }} estudiante(s)</span>
+    <button type="button" class="btn-primary" (click)="save()" [disabled]="isSaving()">
+      <i class="fa-solid fa-floppy-disk"></i>
+      {{ isSaving() ? 'Guardando...' : 'Guardar día' }}
+    </button>
+  </div>
+  } @else if (selectedDay()) {
+  <p class="state-message">Pulsa «Cargar estudiantes» para ver la lista de {{ selectedTeacherGroup()?.grade }} {{
+    selectedTeacherGroup()?.section }}.</p>
+  }
+</div>

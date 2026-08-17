@@ -1,0 +1,150 @@
+@if (isOpen() && announcement()) {
+<div class="modal-backdrop" (click)="closeModal.emit()">
+
+  <div
+    class="modal-panel modal-large"
+    (click)="$event.stopPropagation()"
+  >
+
+    <div class="modal-header">
+      <h2>Editar Comunicado</h2>
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="closeModal.emit()"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form
+      class="modal-form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+    >
+
+      <div class="announcement-reference">
+        <div>
+          <span class="reference-label">Comunicado</span>
+          <strong>#{{ announcement()?.id }}</strong>
+        </div>
+
+        <div>
+          <span class="reference-label">Destinatario</span>
+          <strong>
+            {{ announcement()?.registration?.parent?.personal_information?.names }}
+            {{ announcement()?.registration?.parent?.personal_information?.fathers_surname }}
+            {{ announcement()?.registration?.parent?.personal_information?.mothers_surname }}
+          </strong>
+        </div>
+
+        <div>
+          <span class="reference-label">Estudiante</span>
+          <strong>
+            {{ announcement()?.registration?.student?.personal_information?.names }}
+            {{ announcement()?.registration?.student?.personal_information?.fathers_surname }}
+            {{ announcement()?.registration?.student?.personal_information?.mothers_surname }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="readonly-grid">
+
+        <div class="field">
+          <label>
+            Tipo <span class="required">*</span>
+          </label>
+
+          <div class="filter-select">
+            <select formControlName="type">
+              <option value="Reuniones">Reuniones</option>
+              <option value="Avisos">Avisos</option>
+              <option value="Inasistencias">Inasistencias</option>
+              <option value="Bajo rendimiento">
+                Bajo rendimiento
+              </option>
+              <option value="Eventos">Eventos</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Prioridad</label>
+
+          <div class="filter-select">
+            <select formControlName="priority">
+              <option [ngValue]="null">Sin prioridad</option>
+              <option value="Baja">Baja</option>
+              <option value="Media">Media</option>
+              <option value="Alta">Alta</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Fecha <span class="required">*</span>
+          </label>
+
+          <input
+            type="datetime-local"
+            formControlName="registration_date"
+          >
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>
+          Asunto <span class="required">*</span>
+        </label>
+
+        <textarea
+          rows="2"
+          formControlName="affair"
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label>Descripción</label>
+
+        <textarea
+          rows="4"
+          formControlName="description"
+          placeholder="Opcional"
+        ></textarea>
+      </div>
+
+      @if (errorMessage) {
+      <div class="form-error">
+        {{ errorMessage }}
+      </div>
+      }
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="closeModal.emit()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="submitting"
+        >
+          {{ submitting ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+}

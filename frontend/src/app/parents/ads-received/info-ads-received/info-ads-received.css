@@ -1,0 +1,79 @@
+@import url('../../../teachers/ads-sent/info-ads-sent/info-ads-sent.css');
+@import url('../../../admin/generic-styles/generic-info.css');
+
+.detail-subtitle {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #7a8676;
+}
+
+.announcement-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding: 16px;
+    border: 1px solid #e7ece5;
+    border-radius: 14px;
+    background: #fafcf9;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.detail-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #72816d;
+}
+
+.detail-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2a1c;
+    text-align: right;
+}
+
+.announcement-description {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 18px;
+}
+
+.description-box {
+    min-height: 100px;
+
+    padding: 14px;
+
+    border: 1px solid #dde3d9;
+    border-radius: 12px;
+
+    background: #fff;
+
+    font-size: 14px;
+    line-height: 1.6;
+    color: #374151;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+@media (max-width: 600px) {
+
+    .detail-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .detail-value {
+        text-align: left;
+    }
+
+}

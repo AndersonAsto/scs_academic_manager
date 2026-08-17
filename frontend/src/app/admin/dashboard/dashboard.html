@@ -1,0 +1,179 @@
+<div class="generics-page">
+
+  <div class="page-header-hero">
+    <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <circle cx="520" cy="30" r="70" class="decor-circle" />
+      <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+      <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+      <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+      <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+      <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fa-solid fa-chart-simple"></i>
+      </div>
+      <div>
+        <h1>Panel Principal</h1>
+        <p class="subtitle">Resumen estadístico del año lectivo seleccionado.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-filter"></i>
+      Año lectivo
+    </div>
+
+    <div class="filters-content">
+      <div class="filter-select">
+        <i class="fa-solid fa-calendar-days"></i>
+        <select (change)="onYearChange(+$any($event.target).value)">
+          @for (year of years(); track year.id) {
+          <option [value]="year.id" [selected]="year.id === selectedYearId()">{{ year.year }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+  <p class="state-message">Cargando estadísticas...</p>
+  } @else if (summary(); as data) {
+  <!-- Tarjetas de métricas -->
+  <div class="stats-grid">
+    <div class="stat-mini-card">
+      <i class="fa-solid fa-user-graduate"></i>
+      <span class="stat-mini-value">{{ data.total_students }}</span>
+      <span class="stat-mini-label">Total alumnos matriculados</span>
+    </div>
+
+    <div class="stat-mini-card">
+      <i class="fa-solid fa-chalkboard-user"></i>
+      <span class="stat-mini-value">{{ data.total_teachers }}</span>
+      <span class="stat-mini-label">Total docentes</span>
+    </div>
+
+    <div class="stat-mini-card">
+      <i class="fa-solid fa-file-signature"></i>
+      <span class="stat-mini-value">{{ data.total_registrations }}</span>
+      <span class="stat-mini-label">Total matrículas</span>
+    </div>
+
+    <div class="stat-mini-card">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span class="stat-mini-value">{{ data.attendance_rate !== null ? data.attendance_rate + '%' : '-' }}</span>
+      <span class="stat-mini-label">Asistencia general</span>
+    </div>
+
+    <div class="stat-mini-card">
+      <i class="fa-solid fa-chart-line"></i>
+      <span class="stat-mini-value">{{ data.general_average ?? '-' }}</span>
+      <span class="stat-mini-label">Promedio general</span>
+    </div>
+  </div>
+
+  <!-- Matriculados por grado y sección -->
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-users-line"></i>
+      Matriculados por Grado y Sección
+    </div>
+
+    @if (data.by_grade_section.length === 0) {
+    <p class="state-message">No hay matrículas registradas para este año.</p>
+    } @else {
+    <div class="bar-list">
+      @for (row of data.by_grade_section; track row.grade + row.section) {
+      <button type="button" class="bar-row bar-row-button"
+        [class.active]="selectedGroupKey() === (row.grade + '||' + row.section)"
+        (click)="toggleGroup(row.grade, row.section)">
+        <span class="bar-label">{{ row.grade }} {{ row.section }}</span>
+        <div class="bar-track">
+          <div class="bar-fill" [style.width.%]="barWidth(row.count)"></div>
+        </div>
+        <span class="bar-count">{{ row.count }}</span>
+      </button>
+      }
+    </div>
+
+    <!-- Panel expandido: detalle del grupo seleccionado -->
+    @if (selectedGroupDetail(); as group) {
+    <div class="group-detail-panel">
+      <div class="group-detail-charts">
+        <div class="chart-card">
+          <span class="chart-card-title">Promedio General Anual</span>
+          <app-bar-chart [labels]="['Promedio General']" [data]="[group.general_average ?? 0]" [maxValue]="20"
+            color="#00897B" />
+        </div>
+
+        <div class="chart-card">
+          <span class="chart-card-title">Asistencia del Grupo</span>
+          <app-bar-chart [labels]="['Asistencia']" [data]="[(group.attendance_average ?? 0) * 100]" [maxValue]="100"
+            color="#2962a8" />
+        </div>
+      </div>
+
+      <div class="course-chip-list">
+        @for (course of group.courses; track course.course) {
+        <button type="button" class="course-chip" [class.selected]="selectedCourseName() === course.course"
+          (click)="toggleCourse(course.course)">
+          {{ course.course }}
+        </button>
+        }
+      </div>
+
+      @if (selectedCourseDetail(); as course) {
+      <div class="course-detail-panel">
+        <div class="chart-card">
+          <span class="chart-card-title">{{ course.course }} — Promedio por Bloque Lectivo</span>
+          <app-bar-chart [labels]="courseBlockLabels(course)" [data]="courseBlockValues(course)" [maxValue]="20" />
+        </div>
+
+        <div class="course-detail-metrics">
+          <span class="group-summary-metric">
+            <i class="fa-solid fa-chart-line"></i>
+            Promedio del curso: <strong>{{ courseComputedAverage(course) ?? '-' }}</strong>
+          </span>
+          <span class="group-summary-metric">
+            <i class="fa-solid fa-calendar-check"></i>
+            Asistencia del curso:
+            <strong>{{ course.attendance_average !== null ? (course.attendance_average * 100).toFixed(0) + '%' : '-'
+              }}</strong>
+          </span>
+        </div>
+      </div>
+      }
+    </div>
+    }
+    }
+  </div>
+  <!-- Reportes rápidos -->
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-bolt"></i>
+      Reportes Rápidos
+    </div>
+
+    <div class="quick-links">
+      <button type="button" class="quick-link-card" (click)="goTo('/admin/academic-performance')">
+        <i class="fa-solid fa-file-excel"></i>
+        <span>Rendimiento académico detallado</span>
+      </button>
+
+      <button type="button" class="quick-link-card" (click)="goTo('/admin/registrations')">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Gestionar matrículas</span>
+      </button>
+
+      <button type="button" class="quick-link-card" (click)="goTo('/admin/teacher-groups')">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <span>Grupos docentes</span>
+      </button>
+    </div>
+  </div>
+  }
+</div>

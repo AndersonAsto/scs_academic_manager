@@ -1,0 +1,102 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onClose()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2>
+          Usuario: {{ academicStaff()?.personal_information?.names }} 
+          {{ academicStaff()?.personal_information?.fathers_surname }}
+        </h2>
+        <button class="close-btn" (click)="onClose()" title="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        @if (loading()) {
+          <div class="state-message">
+            <p>Cargando datos de usuario...</p>
+          </div>
+        } @else if (error()) {
+          <div class="state-message error">
+            <p>{{ error() }}</p>
+          </div>
+        } @else if (!user()) {
+          <div class="state-message">
+            <p>No se encontró un usuario vinculado a este registro de personal.</p>
+          </div>
+        } @else {
+          <div class="generics-list">
+            <div class="generic-card">
+              @if (isEditing()) {
+                <div class="modal-form inline-edit">
+                  <div class="field">
+                    <label>Nombre de Usuario <span class="required">*</span></label>
+                    <input type="text" [(ngModel)]="editForm().username" placeholder="ej. usuario.admin" />
+                  </div>
+
+                  <div class="field">
+                    <label>Contraseña <span class="required">*</span></label>
+                    <input type="password" [(ngModel)]="editForm().hashed_password" placeholder="••••••••" />
+                  </div>
+
+                  <!-- Selector del Enum de Rol -->
+                  <div class="field">
+                    <label>Rol / Perfil <span class="required">*</span></label>
+                    <div class="select-wrapper">
+                      <select [ngModel]="editForm().role" (ngModelChange)="editForm().role = $event">
+                        <option value="" disabled>Seleccione un rol</option>
+                        @for (r of roles(); track r) {
+                          <option [value]="r">{{ r }}</option>
+                        }
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>Descripción</label>
+                    <textarea [(ngModel)]="editForm().description" rows="2" placeholder="Observaciones de la cuenta"></textarea>
+                  </div>
+
+                  <div class="modal-actions">
+                    <button class="btn-secondary" (click)="cancelEdit()" [disabled]="saving()">Cancelar</button>
+                    <button class="btn-primary" (click)="saveUser()" [disabled]="saving()">
+                      {{ saving() ? 'Guardando...' : 'Guardar' }}
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="generic-info">
+                  <span class="generic-id">ID {{ user()?.id }}</span>
+                  <div class="generic-content">
+                    <span class="generic-name">&#64;{{ user()?.username || 'Sin usuario' }}</span>
+
+                    <span class="generic-detail">
+                      <strong>Rol:</strong> {{ user()?.role || 'No asignado' }}
+                    </span>
+                    <span class="generic-detail">
+                      <strong>Correo vinculado:</strong> {{ academicStaff()?.personal_information?.email }}
+                    </span>
+                    @if (user()?.description) {
+                      <span class="generic-detail">
+                        <strong>Obs:</strong> {{ user()?.description }}
+                      </span>
+                    }
+                    <span class="status-badge" [class.inactive]="!user()?.status">
+                      {{ user()?.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="generic-actions">
+                  <button class="icon-btn edit" (click)="startEdit()" title="Editar credenciales">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

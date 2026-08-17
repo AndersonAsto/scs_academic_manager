@@ -1,0 +1,338 @@
+@if (isOpen()) {
+
+<div class="modal-backdrop" (click)="closeModal.emit()">
+
+    <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h2>
+                {{ isEditMode ? 'Actualizar Horario' : 'Nuevo Horario' }}
+            </h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                (click)="closeModal.emit()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <form
+            class="modal-form"
+            [formGroup]="form"
+            (ngSubmit)="onSubmit()">
+
+            <!-- Año -->
+
+            <div class="field">
+
+                <label>
+                    Año Lectivo
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-calendar"></i>
+
+                    <select formControlName="year_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(year of years(); track year.id){
+
+                        <option [ngValue]="year.id">
+                            {{ year.year }}
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- Grupo Docente -->
+
+            <div class="field">
+
+                <label>
+                    Grupo de Docente
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <select formControlName="teacher_group_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(group of teacherGroupsByYear(); track group.id){
+
+                        <option [ngValue]="group.id">
+
+                            {{
+                            group.course.course +
+                            ' | ' +
+                            group.grade.grade +
+                            ' - ' +
+                            group.section.section +
+                            ' | ' +
+                            group.academic_staff_contract.academic_staff.personal_information.names +
+                            ' ' +
+                            group.academic_staff_contract.academic_staff.personal_information.fathers_surname
+                            }}
+
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            @if(selectedTeacherGroup()){
+
+            <div class="readonly-group">
+
+                <div class="readonly-title">
+                    Información del grupo seleccionado
+                </div>
+
+                <div class="readonly-grid">
+
+                    <div>
+
+                        <label>Docente</label>
+
+                        <input
+                            type="text"
+                            readonly
+                            [value]="
+                            selectedTeacherGroup()!.academic_staff_contract.academic_staff.personal_information.names +
+                            ' ' +
+                            selectedTeacherGroup()!.academic_staff_contract.academic_staff.personal_information.fathers_surname +
+                            ' ' +
+                            selectedTeacherGroup()!.academic_staff_contract.academic_staff.personal_information.mothers_surname">
+
+                    </div>
+
+                    <div>
+
+                        <label>Curso</label>
+
+                        <input
+                            type="text"
+                            readonly
+                            [value]="selectedTeacherGroup()!.course.course">
+
+                    </div>
+
+                    <div>
+
+                        <label>Grado</label>
+
+                        <input
+                            type="text"
+                            readonly
+                            [value]="selectedTeacherGroup()!.grade.grade">
+
+                    </div>
+
+                    <div>
+
+                        <label>Sección</label>
+
+                        <input
+                            type="text"
+                            readonly
+                            [value]="selectedTeacherGroup()!.section.section">
+
+                    </div>
+
+                    <div>
+
+                        <label>Tutor</label>
+
+                        <input
+                            type="text"
+                            readonly
+                            [value]="selectedTeacherGroup()!.tutor ? 'Sí' : 'No'">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            }
+
+            <!-- Bloque horario -->
+
+            <div class="field">
+
+                <label>
+                    Horario
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                    <select formControlName="time_slot_id">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        @for(slot of timeSlots(); track slot.id){
+
+                        <option [ngValue]="slot.id">
+
+                            {{
+                            slot.time_slot +
+                            ' | ' +
+                            slot.start_time +
+                            ' - ' +
+                            slot.end_time
+                            }}
+
+                        </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- Día -->
+
+            <div class="field">
+
+                <label>
+                    Día
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-calendar-day"></i>
+
+                    <select formControlName="day">
+
+                        <option [ngValue]="null">
+                            Seleccione...
+                        </option>
+
+                        <option value="Lunes">
+                            Lunes
+                        </option>
+
+                        <option value="Martes">
+                            Martes
+                        </option>
+
+                        <option value="Miércoles">
+                            Miércoles
+                        </option>
+
+                        <option value="Jueves">
+                            Jueves
+                        </option>
+
+                        <option value="Viernes">
+                            Viernes
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- Descripción -->
+
+            <div class="field">
+
+                <label>
+                    Descripción
+                </label>
+
+                <textarea
+                    rows="3"
+                    formControlName="description"
+                    placeholder="Opcional">
+
+                </textarea>
+
+            </div>
+
+            @if(errorMessage){
+
+            <div class="form-error">
+
+                {{ errorMessage }}
+
+            </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="closeModal.emit()">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn-primary"
+                    type="submit"
+                    [disabled]="submitting">
+
+                    @if(submitting){
+
+                    <span>
+                        Guardando...
+                    </span>
+
+                    } @else {
+
+                    <span>
+
+                        {{ isEditMode ? 'Guardar cambios' : 'Crear horario' }}
+
+                    </span>
+
+                    }
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+}

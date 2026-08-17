@@ -1,0 +1,132 @@
+@if (isOpen()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+
+            <h2>Actualizar Bloque Lectivo</h2>
+            <button
+                type="button"
+                class="close-btn"
+                (click)="onCancel()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <form
+            [formGroup]="form"
+            (ngSubmit)="onSubmit()"
+            class="modal-form">
+
+            <!-- Año -->
+            <div class="field">
+                <label>
+                    Año lectivo
+                </label>
+                <div class="filter-select">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <select
+                        formControlName="year_id"
+                        [disabled]="true">
+                        @for(year of years(); track year.id){
+                        <option [ngValue]="year.id">
+                            {{ year.id }} - {{ year.year }}
+                        </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bloque -->
+            <div class="field">
+                <label>
+                    Bloque lectivo
+                </label>
+                <div class="filter-select">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <select
+                        formControlName="teaching_block"
+                        [disabled]="true">
+                        @for(block of teachingBlockOptions; track block){
+                        <option [value]="block">
+                            {{ block }}
+                        </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Fecha Inicio -->
+            <div class="field">
+                <label>
+                    Fecha de inicio
+                    <span class="required">*</span>
+
+                </label>
+                <input
+                    type="date"
+                    formControlName="start_day">
+                @if(form.get('start_day')?.invalid &&
+                form.get('start_day')?.touched){
+                <span class="field-error">
+                    La fecha de inicio es obligatoria.
+                </span>
+                }
+            </div>
+
+            <!-- Fecha Fin -->
+            <div class="field">
+                <label>
+                    Fecha de fin
+                    <span class="required">*</span>
+                </label>
+                <input
+                    type="date"
+                    formControlName="end_day">
+                @if(form.get('end_day')?.invalid &&
+                form.get('end_day')?.touched){
+                <span class="field-error">
+                    La fecha de fin es obligatoria.
+                </span>
+                }
+            </div>
+
+            <!-- Descripción -->
+            <div class="field">
+                <label>
+                    Descripción
+                </label>
+                <textarea
+                    rows="3"
+                    formControlName="description"
+                    placeholder="Opcional">
+                </textarea>
+            </div>
+            @if(errorMessage){
+            <div class="form-error">
+                {{ errorMessage }}
+            </div>
+            }
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="onCancel()">
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    [disabled]="submitting">
+                    @if(submitting){
+                    <span>Guardando...</span>
+                    }@else{
+                    <span>Guardar cambios</span>
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}

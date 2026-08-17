@@ -1,0 +1,122 @@
+@if (isOpen() && schoolDay()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle del Día Lectivo</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ schoolDay()!.id }}</span>
+                <h3>{{ schoolDay()!.school_day }}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">N° de Semana</span>
+                    <span class="info-value">{{ schoolDay()!.week_number }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Día</span>
+                    <span class="info-value">{{ schoolDay()!.day }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Tipo</span>
+                    <span class="info-value">{{ schoolDay()!.type }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!schoolDay()!.status">
+                        {{ schoolDay()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ schoolDay()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(schoolDay()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(schoolDay()!.updatedAt) }}</span>
+                </div>
+
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item">
+                            <span class="info-label">Bloque Lectivo</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ schoolDay()!.teaching_block.id }}</span>
+                                <span class="info-value"> {{ schoolDay()!.teaching_block.teaching_block}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Fecha de Inicio</span>
+                            <span class="info-value">{{ schoolDay()!.teaching_block.start_day }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Fecha de Finalización</span>
+                            <span class="info-value">{{ schoolDay()!.teaching_block.end_day }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!schoolDay()!.status">
+                                {{ schoolDay()!.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                        <div class="info-item full">
+
+                            <div class="info-grid-3">
+
+                                <div class="info-item">
+                                    <span class="info-label">Año Lectivo</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ schoolDay()!.teaching_block.year.id }}</span>
+                                        <span class="info-value"> {{ schoolDay()!.teaching_block.year.year}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!schoolDay()!.teaching_block.year.status">
+                                        {{ schoolDay()!.teaching_block.year.status ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+
+    </div>
+</div>
+}

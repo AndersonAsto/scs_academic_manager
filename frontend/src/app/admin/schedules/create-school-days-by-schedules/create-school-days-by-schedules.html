@@ -1,0 +1,58 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2>Generar Días Lectivos por Horario</h2>
+        <button type="button" class="close-btn" (click)="onCancel()" title="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <form class="modal-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="field">
+          <label>
+            Año académico
+            <span class="required">*</span>
+          </label>
+          <div class="filter-select">
+            <i class="fa-solid fa-calendar-days"></i>
+            <select formControlName="year_id">
+              <option [ngValue]="null">Seleccione un año académico</option>
+              @for (year of years(); track year.id) {
+                <option [ngValue]="year.id">
+                  {{ year.year }} @if (year.description) { - {{ year.description }} }
+                </option>
+              }
+            </select>
+          </div>
+          @if (form.get('year_id')?.invalid && form.get('year_id')?.touched) {
+            <span class="field-error">Debe seleccionar un año académico.</span>
+          }
+        </div>
+
+        <div class="form-info">
+          Al procesar el año seleccionado, se buscarán los horarios y días lectivos activos vinculados para generar automáticamente sus registros.
+        </div>
+
+        @if (errorMessage()) {
+          <div class="form-error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="onCancel()" [disabled]="submitting()">
+            Cancelar
+          </button>
+          <button class="btn-primary" type="submit" [disabled]="submitting()">
+            @if (submitting()) {
+              <span>Generando...</span>
+            } @else {
+              <span>Generar días lectivos</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

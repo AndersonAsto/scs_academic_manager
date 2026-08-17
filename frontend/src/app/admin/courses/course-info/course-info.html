@@ -1,0 +1,58 @@
+@if (isOpen() && course()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle del Curso</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ course()!.id }}</span>
+                <h3>{{ course()!.course }}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Recurrencia semanal</span>
+                    <span class="info-value">{{ course()!.recurrence }} {{ course()!.recurrence === 1 ? 'vez' : 'veces' }} por semana</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!course()!.status">
+                        {{ course()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ course()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(course()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(course()!.updatedAt) }}</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+
+    </div>
+</div>
+}

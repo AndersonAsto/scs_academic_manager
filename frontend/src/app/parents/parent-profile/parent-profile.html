@@ -1,0 +1,297 @@
+@if (isLoading()) {
+<p class="state-message">Cargando perfil...</p>
+} @else if (profile(); as profile) {
+
+<div class="generics-page profile-page">
+
+  <!-- Cabecera -->
+  <div class="page-header-hero">
+    <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <circle cx="520" cy="30" r="70" class="decor-circle" />
+      <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+      <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+      <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+      <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+      <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fa-solid fa-user-gear"></i>
+      </div>
+      <div>
+        <h1>Configuración de Perfil</h1>
+        <p class="subtitle">Administra tu cuenta y consulta tus datos personales.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mensajes -->
+  @if (errorMessage()) {
+  <p class="state-message error">
+    {{ errorMessage() }}
+  </p>
+  }
+
+  @if (successMessage()) {
+  <p class="state-message success">
+    {{ successMessage() }}
+  </p>
+  }
+
+  <!-- Contenido -->
+  <div class="profile-layout">
+
+    <!-- Perfil -->
+    <aside class="profile-sidebar">
+
+      <div class="profile-identity">
+
+        <div class="avatar-wrapper">
+
+          @if (avatarUrl(); as url) {
+          <img [src]="url" alt="Foto de perfil" class="avatar-image" />
+          } @else {
+          <div class="avatar-placeholder">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          }
+
+          <button type="button" class="avatar-edit-btn" (click)="triggerFileInput()" [disabled]="isUploadingPicture()"
+            title="Cambiar foto">
+            <i class="fa-solid" [class.fa-camera]="!isUploadingPicture()" [class.fa-spinner]="isUploadingPicture()"
+              [class.fa-spin]="isUploadingPicture()"></i>
+          </button>
+
+          @if (profile.profile_picture) {
+          <button type="button" class="avatar-remove-btn" (click)="removeProfilePicture()"
+            [disabled]="isDeletingPicture()" title="Eliminar foto">
+            <i class="fa-solid" [class.fa-trash]="!isDeletingPicture()" [class.fa-spinner]="isDeletingPicture()"
+              [class.fa-spin]="isDeletingPicture()"></i>
+          </button>
+          }
+
+          <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden
+            (change)="onFileSelected($event)" />
+
+        </div>
+
+        <div class="profile-identity-content">
+
+          <h2 class="profile-name">
+            {{ profile.personalInformation.names }}
+            {{ profile.personalInformation.fathers_surname }}
+            {{ profile.personalInformation.mothers_surname }}
+          </h2>
+
+          <span class="profile-role">
+            {{ profile.role }}
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="profile-sidebar-divider"></div>
+
+      <div class="profile-sidebar-info">
+
+        <div class="profile-meta">
+          <span class="profile-meta-label">Usuario</span>
+          <span class="profile-meta-value">
+            {{ username() }}
+          </span>
+        </div>
+
+        <div class="profile-meta">
+          <span class="profile-meta-label">Correo</span>
+          <span class="profile-meta-value">
+            {{ email() }}
+          </span>
+        </div>
+
+        <div class="profile-meta">
+          <span class="profile-meta-label">Teléfono</span>
+          <span class="profile-meta-value">
+            {{ phoneNumber() || '—' }}
+          </span>
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- Configuración -->
+    <main class="profile-content">
+
+      <!-- Cuenta -->
+      <section class="profile-section">
+
+        <div class="profile-section-header">
+          <div>
+            <h2 class="section-title">Cuenta</h2>
+            <p class="section-description">
+              Actualiza la información utilizada para acceder a tu cuenta.
+            </p>
+          </div>
+        </div>
+
+        <div class="profile-form-grid">
+
+          <div class="field">
+            <label for="username">Usuario</label>
+            <input id="username" type="text" [(ngModel)]="username" [ngModelOptions]="{ standalone: true }" />
+          </div>
+
+          <div class="field">
+            <label for="email">Correo Electrónico</label>
+            <input id="email" type="email" [(ngModel)]="email" [ngModelOptions]="{ standalone: true }" />
+          </div>
+
+          <div class="field">
+            <label for="phone">Teléfono</label>
+            <input id="phone" type="tel" maxlength="9" [(ngModel)]="phoneNumber"
+              [ngModelOptions]="{ standalone: true }" />
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Contraseña -->
+      <section class="profile-section">
+
+        <div class="profile-section-header">
+          <div>
+            <h2 class="section-title">Seguridad</h2>
+            <p class="section-description">
+              Cambia tu contraseña para mantener protegida tu cuenta.
+            </p>
+          </div>
+        </div>
+
+        <p class="field-hint">
+          Déjalos en blanco si no deseas cambiar tu contraseña.
+        </p>
+
+        <div class="profile-form-grid">
+
+          <div class="field">
+            <label for="password">Nueva Contraseña</label>
+            <input id="password" type="password" [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" />
+          </div>
+
+          <div class="field">
+            <label for="confirmPassword">Confirmar Contraseña</label>
+            <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword"
+              [ngModelOptions]="{ standalone: true }" />
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Datos personales -->
+      <section class="profile-section">
+
+        <div class="profile-section-header">
+          <div>
+            <h2 class="section-title">Datos Personales</h2>
+            <p class="section-description">
+              Información registrada en el sistema académico.
+            </p>
+          </div>
+
+          <span class="profile-readonly-badge">
+            Solo lectura
+          </span>
+        </div>
+
+        <p class="field-hint">
+          Estos datos solo pueden ser modificados por un administrador.
+        </p>
+
+        <div class="profile-data-grid">
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">Nombres</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.names }}
+            </span>
+          </div>
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">Apellido Paterno</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.fathers_surname }}
+            </span>
+          </div>
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">Apellido Materno</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.mothers_surname }}
+            </span>
+          </div>
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">DNI</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.dni }}
+            </span>
+          </div>
+
+          <div class="profile-data-item profile-data-item-wide">
+            <span class="profile-data-label">Dirección</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.address ?? '—' }}
+            </span>
+          </div>
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">Distrito</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.district ?? '—' }}
+            </span>
+          </div>
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">Provincia</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.province ?? '—' }}
+            </span>
+          </div>
+
+          <div class="profile-data-item">
+            <span class="profile-data-label">Departamento</span>
+            <span class="profile-data-value">
+              {{ profile.personalInformation.department ?? '—' }}
+            </span>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Acciones -->
+      <div class="profile-actions">
+
+        <button type="button" class="btn-primary" (click)="save()" [disabled]="isSaving()">
+          <i class="fa-solid fa-floppy-disk"></i>
+
+          {{ isSaving() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+}

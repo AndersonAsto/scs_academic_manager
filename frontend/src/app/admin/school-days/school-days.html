@@ -1,0 +1,150 @@
+<div class="school-days-page">
+
+    <div class="page-header-hero">
+        <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <circle cx="520" cy="30" r="70" class="decor-circle" />
+            <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+            <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+            <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+            <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+            <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+        </svg>
+
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fa-regular fa-calendar-days"></i>
+            </div>
+            <div>
+                <h1>Días Lectivos</h1>
+                <p class="subtitle">Gestiona los días lectivos de cada bimestre.</p>
+            </div>
+        </div>
+
+        <button class="btn-tertiary btn-hero-outline" (click)="onDelete()" [disabled]="selectedYear() === null">
+            <i class="fa-solid fa-trash"></i>
+            Eliminar Días Lectivos
+        </button>
+
+        <button class="btn-hero" (click)="onAdd()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Días Lectivos</span>
+        </button>
+    </div>
+
+    <div class="filters-container">
+        <div class="filters-header">
+            <i class="fa-solid fa-filter"></i>
+            <span>Filtros</span>
+        </div>
+
+        <div class="filters-content">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar día lectivo..." [ngModel]="searchTerm()"
+                    (ngModelChange)="searchTerm.set($event)" />
+            </div>
+
+            <div class="filter-select">
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <select [ngModel]="selectedYear()" (ngModelChange)="onYearChange($event)">
+                    <option [ngValue]="null">
+                        Todos los años
+                    </option>
+
+                    @for (year of years(); track year.id) {
+                    <option [ngValue]="year.id">
+                        {{ year.year }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-select">
+                <i class="fa-solid fa-layer-group"></i>
+                <select [ngModel]="selectedTeachingBlock()" (ngModelChange)="selectedTeachingBlock.set($event)"
+                    [disabled]="teachingBlocks().length === 0">
+                    <option [ngValue]="null">
+                        @if(selectedYear() === null){
+                        Todos los bloques
+                        } @else {
+                        Todos los bloques del año
+                        }
+                    </option>
+                    @for(block of teachingBlocks(); track block.id){
+                    <option [ngValue]="block.id">
+                        {{ block.teaching_block }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <button class="btn-clear" (click)="clearFilters()"><i class="fa-solid fa-rotate-left"></i>Limpiar</button>
+
+
+        </div>
+    </div>
+
+    @if (loading()) {
+    <div class="state-message">Cargando días lectivos...</div>
+    } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+    } @else if (filteredSchoolDays().length === 0) {
+    <div class="state-message">No se encontraron días lectivos.</div>
+    } @else {
+    <div class="generics-list">
+        @for (schoolDay of filteredSchoolDays(); track schoolDay.id) {
+        <div class="generic-card">
+            <div class="generic-info">
+                <span class="generic-id">
+                    #{{ schoolDay.id }}
+                </span>
+                <div class="generic-content">
+                    <span class="generic-name">
+                        {{ schoolDay.day }} - {{ schoolDay.school_day }}
+                    </span>
+
+                    <span class="generic-detail">
+                        Año Lectivo: {{ schoolDay.teaching_block.year.year }}
+                    </span>
+
+                    <span class="generic-detail">
+                        Bloque Lectivo: {{ schoolDay.teaching_block.teaching_block }}
+                    </span>
+
+                    <span class="generic-detail">
+                        Semana: {{ schoolDay.week_number }} | Tipo: {{ schoolDay.type }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="generic-actions">
+                <div class="info-item">
+                    <span class="status-badge" [class.inactive]="!schoolDay.status">
+                        {{ schoolDay.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+                <button class="icon-btn info" (click)="onInfo(schoolDay)" aria-label="Más información">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+                <button class="icon-btn edit" (click)="onEdit(schoolDay)" aria-label="Actualizar">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+
+</div>
+
+<app-create-school-days [isOpen]="isCreateModalOpen()" (closeModal)="onCloseCreateModal()" (saved)="onSaved()" />
+
+<app-update-school-days [isOpen]="isUpdateModalOpen()" [schoolDay]="schoolDayToEdit()"
+    (closeModal)="onCloseUpdateModal()" (saved)="onSaved()" />
+
+<app-info-school-days [isOpen]="isInfoModalOpen()" [schoolDay]="schoolDayToView()" (closeModal)="onCloseInfoModal()" />
+
+<app-delete-school-days [isOpen]="isDeleteModalOpen()" [yearId]="yearToDelete()" [year]="selectedYearObject()"
+    (closeModal)="onCloseDeleteModal()" (deleted)="onDeleted()" />

@@ -1,0 +1,151 @@
+@if (isOpen() && announcement()) {
+
+<div
+  class="modal-backdrop"
+  (click)="onClose()">
+
+  <div
+    class="modal-panel"
+    (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+
+      <div>
+
+        <h2>
+          {{ announcement()?.affair }}
+        </h2>
+
+        <p class="detail-subtitle">
+          Comunicado #{{ announcement()?.id }}
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="onClose()">
+
+        <i class="fa-solid fa-xmark"></i>
+
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="announcement-detail">
+
+        <div class="detail-row">
+
+          <span class="detail-label">
+            Tipo
+          </span>
+
+          <span class="detail-value">
+            {{ announcement()?.type }}
+          </span>
+
+        </div>
+
+        @if (announcement()?.priority) {
+
+          <div class="detail-row">
+
+            <span class="detail-label">
+              Prioridad
+            </span>
+
+            <span class="detail-value">
+              {{ announcement()?.priority }}
+            </span>
+
+          </div>
+
+        }
+
+        <div class="detail-row">
+
+          <span class="detail-label">
+            Fecha
+          </span>
+
+          <span class="detail-value">
+            {{
+              announcement()?.registration_date
+                | date:'dd/MM/yyyy HH:mm'
+            }}
+          </span>
+
+        </div>
+
+        @if (announcement()?.teacher_group?.course) {
+
+          <div class="detail-row">
+
+            <span class="detail-label">
+              Curso
+            </span>
+
+            <span class="detail-value">
+              {{
+                announcement()?.teacher_group?.course?.course
+              }}
+            </span>
+
+          </div>
+
+        }
+
+        <div class="detail-row">
+
+          <span class="detail-label">
+            Estado
+          </span>
+
+          <span
+            class="status-badge"
+            [class.inactive]="!announcement()?.reading">
+
+            {{
+              announcement()?.reading
+                ? 'Leído'
+                : 'No leído'
+            }}
+
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="announcement-description">
+
+        <span class="detail-label">
+          Mensaje
+        </span>
+
+        <div class="description-box">
+
+          {{ announcement()?.description || 'Sin descripción.' }}
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      <button
+        class="btn-secondary"
+        (click)="onClose()">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+}

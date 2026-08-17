@@ -1,0 +1,106 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onClose()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2>
+          Contratos: {{ academicStaff()?.personal_information?.names }} 
+          {{ academicStaff()?.personal_information?.fathers_surname }} | {{ academicStaff()?.staff_type}}
+        </h2>
+        <button class="close-btn" (click)="onClose()" title="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        @if (loading()) {
+          <div class="state-message">
+            <p>Cargando contratos...</p>
+          </div>
+        } @else if (error()) {
+          <div class="state-message error">
+            <p>{{ error() }}</p>
+          </div>
+        } @else if (contracts().length === 0) {
+          <div class="state-message">
+            <p>Este usuario no cuenta con contratos registrados.</p>
+          </div>
+        } @else {
+          <div class="generics-list">
+            @for (contract of contracts(); track contract.id) {
+              <div class="generic-card">
+                @if (editingContractId() === contract.id) {
+                  <div class="modal-form inline-edit">
+                    <div class="field">
+                      <label>Cargo <span class="required">*</span></label>
+                      <input type="text" [(ngModel)]="editForm().position" placeholder="Cargo u ocupación" />
+                    </div>
+
+                    <div class="readonly-grid">
+                      <div class="field">
+                        <label>Fecha Inicio <span class="required">*</span></label>
+                        <input type="date" [(ngModel)]="editForm().start_date" />
+                      </div>
+                      <div class="field">
+                        <label>Fecha Fin <span class="required">*</span></label>
+                        <input type="date" [(ngModel)]="editForm().end_date" />
+                      </div>
+                    </div>
+
+                    <div class="field">
+                      <label>Descripción</label>
+                      <textarea [(ngModel)]="editForm().description" rows="2" placeholder="Detalles del contrato"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                      <button class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
+                      <button class="btn-primary" (click)="saveEdit(contract.id)">Guardar</button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="generic-info">
+                    <span class="generic-id">Año {{ contract.year.year }}</span>
+                    <div class="generic-content">
+                      <span class="generic-name">{{ contract.position }}</span>
+                      <span class="generic-detail">
+                        <strong>Vigencia:</strong> {{ contract.start_date }} al {{ contract.end_date }}
+                      </span>
+                      @if (contract.description) {
+                        <span class="generic-detail">
+                          <strong>Obs:</strong> {{ contract.description }}
+                        </span>
+                      }
+                      <span class="status-badge" [class.inactive]="!contract.status">
+                        {{ contract.status ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="generic-actions">
+                    <button class="icon-btn edit" (click)="startEdit(contract)" title="Editar contrato">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button
+                        class="icon-btn delete"
+                        (click)="onDelete(contract)"
+                        title="Eliminar contrato">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<app-delete-academic-staff-contracts
+    [isOpen]="isDeleteModalOpen()"
+    [contract]="contractToDelete()"
+    (closeModal)="onCloseDeleteModal()"
+    (deleted)="onContractDeleted()"
+/>

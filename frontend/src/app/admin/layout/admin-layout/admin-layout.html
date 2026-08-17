@@ -1,0 +1,6 @@
+<div class="layout">
+    <app-sidebar />
+    <div class="content" [class.pushed]="!sidebarService.collapsed()">
+        <router-outlet />
+    </div>
+</div>

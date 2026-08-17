@@ -1,0 +1,240 @@
+<div class="teacher-groups-page">
+
+    <div class="page-header-hero">
+        <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <circle cx="520" cy="30" r="70" class="decor-circle" />
+            <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+            <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+            <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+            <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+            <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+        </svg>
+
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-people-group"></i>
+            </div>
+            <div>
+                <h1>Grupos</h1>
+                <p class="subtitle">Gestiona los grupos a cargo de un docente, incluyendo la designación de cursos, grados,
+                secciones y tutoría.</p>
+            </div>
+        </div>
+
+        <button class="btn-hero" (click)="onAdd()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Grupo</span>
+        </button>
+    </div>
+
+    <div class="filters-container">
+
+        <div class="filters-header">
+            <i class="fa-solid fa-filter"></i>
+            <span>Filtros</span>
+        </div>
+
+        <div class="filters-content">
+
+            <!-- Buscador -->
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar docente, DNI, correo, teléfono o fechas..."
+                    [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+            </div>
+
+            <!-- Año -->
+            <div class="filter-select">
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <select [ngModel]="selectedYear()" (ngModelChange)="selectedYear.set($event)">
+                    <option [ngValue]="null">
+                        Todos los años
+                    </option>
+
+                    @for(year of years(); track year.id){
+                    <option [ngValue]="year.id">
+                        {{ year.year }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Curso -->
+            <div class="filter-select">
+                <i class="fa-solid fa-book"></i>
+
+                <select [ngModel]="selectedCourse()" (ngModelChange)="selectedCourse.set($event)">
+                    <option [ngValue]="null">
+                        Todos los cursos
+                    </option>
+
+                    @for(course of courses(); track course.id){
+                    <option [ngValue]="course.id">
+                        {{ course.course }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Grado -->
+            <div class="filter-select">
+                <i class="fa-solid fa-graduation-cap"></i>
+
+                <select [ngModel]="selectedGrade()" (ngModelChange)="selectedGrade.set($event)">
+                    <option [ngValue]="null">
+                        Todos los grados
+                    </option>
+
+                    @for(grade of grades(); track grade.id){
+                    <option [ngValue]="grade.id">
+                        {{ grade.grade }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Sección -->
+            <div class="filter-select">
+                <i class="fa-solid fa-users-rectangle"></i>
+
+                <select [ngModel]="selectedSection()" (ngModelChange)="selectedSection.set($event)">
+                    <option [ngValue]="null">
+                        Todas las secciones
+                    </option>
+
+                    @for(section of sections(); track section.id){
+                    <option [ngValue]="section.id">
+                        {{ section.section }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Tipo de Personal -->
+            <div class="filter-select">
+                <i class="fa-solid fa-user-tie"></i>
+
+                <select [ngModel]="selectedStaffType()" (ngModelChange)="selectedStaffType.set($event)">
+                    <option [ngValue]="null">
+                        Todo el personal
+                    </option>
+
+                    @for(type of staffTypes(); track type){
+                    <option [ngValue]="type">
+                        {{ type }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Tutor -->
+            <div class="filter-select">
+                <i class="fa-solid fa-chalkboard-user"></i>
+
+                <select [ngModel]="selectedTutor()" (ngModelChange)="selectedTutor.set($event)">
+                    <option [ngValue]="null">
+                        Todos
+                    </option>
+
+                    <option [ngValue]="true">
+                        Solo tutores
+                    </option>
+
+                    <option [ngValue]="false">
+                        Solo no tutores
+                    </option>
+
+                </select>
+            </div>
+
+            <button class="btn-clear" (click)="clearFilters()">
+                <i class="fa-solid fa-rotate-left"></i>
+                Limpiar
+            </button>
+
+        </div>
+
+    </div>
+
+    @if (loading()) {
+    <div class="state-message">Cargando grupos de docentes...</div>
+    } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+    } @else if (filteredTeacherGroups().length === 0) {
+    <div class="state-message">No se encontraron grupos de docentes.</div>
+    } @else {
+    <div class="generics-list">
+        @for (teacherGroup of filteredTeacherGroups(); track teacherGroup.id) {
+        <div class="generic-card">
+            <div class="generic-info">
+                <span class="generic-id">
+                    #{{ teacherGroup.id }}
+                </span>
+                <div class="generic-content">
+                    <span class="generic-name">
+                        {{ teacherGroup.academic_staff_contract.year.year }} | {{ teacherGroup.course.course }}
+                    </span>
+
+                    <span class="generic-detail">
+                        Grado y Sección: {{ teacherGroup.grade.grade }} - {{ teacherGroup.section.section }}
+                    </span>
+
+                    <span class="generic-detail">
+                        Docente: {{ teacherGroup.academic_staff_contract.academic_staff.personal_information.names + ' '
+                        +
+                        teacherGroup.academic_staff_contract.academic_staff.personal_information.fathers_surname + ' ' +
+                        teacherGroup.academic_staff_contract.academic_staff.personal_information.mothers_surname }} |
+                        Tutor: {{ teacherGroup.tutor ? 'Si': 'No'}}
+                    </span>
+
+                    <span class="generic-detail">
+                        Contrato: {{ teacherGroup.academic_staff_contract.start_date }} - {{
+                        teacherGroup.academic_staff_contract.end_date }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="generic-actions">
+                <div class="info-item">
+                    <span class="status-badge" [class.inactive]="!teacherGroup.status">
+                        {{ teacherGroup.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+                <button class="icon-btn info" (click)="onInfo(teacherGroup)" aria-label="Más información">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+                <button class="icon-btn edit" (click)="onEdit(teacherGroup)" aria-label="Actualizar">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="icon-btn delete" (click)="onDelete(teacherGroup)" aria-label="Eliminar">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+
+</div>
+
+<app-create-update-teacher-groups
+    [isOpen]="isFormModalOpen()"
+    [teacherGroup]="teacherGroupToEdit()"
+    (closeModal)="onCloseFormModal()"
+    (saved)="onSaved()"
+/>
+
+<app-info-teacher-groups
+    [isOpen]="isInfoModalOpen()"
+    [teacherGroup]="teacherGroupToView()"
+    (closeModal)="onCloseInfoModal()"
+/>
+
+<app-delete-teacher-groups
+    [isOpen]="isDeleteModalOpen()"
+    [teacherGroup]="teacherGroupToDelete()"
+    (closeModal)="onCloseDeleteModal()"
+    (deleted)="onDeleted()"
+/>

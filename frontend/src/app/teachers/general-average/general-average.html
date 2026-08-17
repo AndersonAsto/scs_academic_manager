@@ -1,0 +1,295 @@
+<div class="generics-page">
+
+  <div class="page-header-hero">
+    <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <circle cx="520" cy="30" r="70" class="decor-circle" />
+      <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+      <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+      <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+      <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+      <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+      </div>
+      <div>
+        <h1>Promedio General</h1>
+        <p class="subtitle">Disponible solo para el grupo donde eres tutor.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-filter"></i>
+      Filtros
+    </div>
+
+    <div class="filters-content">
+      <div class="filter-select">
+        <i class="fa-solid fa-calendar-days"></i>
+        <select (change)="onContractChange(+$any($event.target).value)">
+          <option value="" disabled selected>Año (contrato)</option>
+          @for (contract of contracts(); track contract.id) {
+          <option [value]="contract.id">{{ contract.year }} — {{ contract.position }}</option>
+          }
+        </select>
+      </div>
+
+      @if (tutorGroup(); as tutor) {
+      <div class="selected-day-chip">
+        <i class="fa-solid fa-user-graduate"></i>
+        Tutor de {{ tutor.grade }} {{ tutor.section }}
+      </div>
+      }
+    </div>
+  </div>
+
+  @if (selectedContractId() && !tutorGroup() && !isLoadingStudents()) {
+  <p class="state-message">No tienes un grupo asignado como tutor para este año.</p>
+  }
+
+  @if (students().length > 0) {
+  <div class="filters-container">
+    <div class="filter-select">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" class="table-input" placeholder="Buscar por nombres o apellidos..." [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)" />
+    </div>
+  </div>
+  }
+
+  <!-- Tabla de estudiantes -->
+  @if (isLoadingStudents()) {
+  <p class="state-message">Cargando estudiantes...</p>
+  } @else if (students().length > 0) {
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Promedio General</th>
+          <th>Estado</th>
+          <th>Registros</th>
+          <th>Bloques</th>
+          <th>Curso</th>
+          <th>Reportes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (student of filteredStudents(); track student.registration_id) {
+        <tr>
+          <td class="student-name">
+            {{ student.fathers_surname }} {{ student.mothers_surname }}, {{ student.names }}
+          </td>
+          <td class="average-cell final-average">{{ student.general_average ?? '-' }}</td>
+          <td>
+            <span class="status-badge" [class.inactive]="!student.hasGeneralAverage">
+              {{ student.hasGeneralAverage ? 'Calculado' : 'Sin calcular' }}
+            </span>
+          </td>
+          <td>
+            <button type="button" class="btn-secondary btn-sm" (click)="openCourseSelect(student, 'records')">
+              <i class="fa-solid fa-list-check"></i>
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn-secondary btn-sm" (click)="openCourseSelect(student, 'blocks')">
+              <i class="fa-solid fa-layer-group"></i>
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn-secondary btn-sm" (click)="openCourseSelect(student, 'course')">
+              <i class="fa-solid fa-book"></i>
+            </button>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn-secondary btn-sm"
+              (click)="downloadDetailedReport(student)"
+              [disabled]="isDownloading(student.registration_id)"
+              title="Descargar detallado (Excel)"
+            >
+              <i class="fa-solid fa-file-excel"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-secondary btn-sm"
+              (click)="downloadAnnualReport(student)"
+              [disabled]="isDownloadingAnnualReport(student.registration_id)"
+              title="Descargar boleta final (PDF)"
+            >
+              <i class="fa-solid fa-file-pdf"></i>
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn-primary btn-sm" (click)="calculateGeneral(student)"
+              [disabled]="isCalculating(student.registration_id)">
+              <i class="fa-solid fa-calculator"></i>
+              {{ isCalculating(student.registration_id) ? '...' : 'Calcular' }}
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    <span class="subtitle">{{ filteredStudents().length }} de {{ students().length }} estudiante(s)</span>
+  </div>
+  }
+
+  <!-- Modal: selector de curso -->
+  @if (showCourseSelectModal()) {
+  <div class="modal-backdrop" (click)="closeCourseSelect()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Selecciona el curso</h2>
+        <button type="button" class="close-btn" (click)="closeCourseSelect()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (sectionCourses().length === 0) {
+        <p class="state-message">No hay cursos registrados para esta sección.</p>
+        } @else {
+        <div class="day-grid">
+          @for (course of sectionCourses(); track course.id) {
+          <button type="button" class="day-card" (click)="selectCourse(course)">
+            <span class="day-card-label">{{ course.course }}</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeCourseSelect()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Modal: detalle de solo lectura -->
+  <!-- Modal: detalle de solo lectura -->
+  @if (showDetailModal()) {
+  <div class="modal-backdrop" (click)="closeDetailModal()">
+    <div class="modal-panel" [class.modal-panel-lg]="isWideDetail()" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>{{ selectedCourse()?.course }}</h2>
+          <p class="detail-subtitle">{{ selectedStudent()?.names }} {{ selectedStudent()?.fathers_surname }}</p>
+        </div>
+        <button type="button" class="close-btn" (click)="closeDetailModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (isLoadingDetail()) {
+        <p class="state-message">Cargando...</p>
+        } @else if (detailType() === 'records') {
+        @if (recordsDetail().length === 0) {
+        <p class="state-message">No hay registros para este curso.</p>
+        } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Bloque</th>
+                <th>Día</th>
+                <th>Asistencia</th>
+                <th>Calificación</th>
+                <th>Tipo</th>
+                <th>Incidencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of recordsDetail(); track record.school_day + record.time_slot) {
+              <tr>
+                <td><span class="block-chip">{{ record.teaching_block }}</span></td>
+                <td>
+                  <div class="day-cell">
+                    <span class="day-cell-main">{{ record.day }} {{ record.school_day }}</span>
+                    @if (record.week_number) {
+                    <span class="day-cell-week">Semana {{ record.week_number }}</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="attendance-chip" [class]="attendanceClass(record.attendance)">
+                    {{ record.attendance ?? '-' }}
+                  </span>
+                </td>
+                <td class="average-cell">{{ record.score ?? '-' }}</td>
+                <th>
+                  <span class="record-type-chip" [class.record-type-daily]="record.type === 'Calificación Diaria'"
+                    [class.record-type-practice]="record.type === 'Práctica'"
+                    [class.record-type-exam]="record.type === 'Examen'">
+                    {{ record.type }}
+                  </span>
+                </th>
+                <td class="incident-cell" [title]="record.incident ?? ''">{{ record.incident ?? '-' }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+        } @else if (detailType() === 'blocks') {
+        @if (blocksDetail().length === 0) {
+        <p class="state-message">No hay promedios registrados para este curso.</p>
+        } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Bloque</th>
+                <th>Calif. Diaria</th>
+                <th>Prácticas</th>
+                <th>Examen</th>
+                <th>Asistencia</th>
+                <th>Promedio</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (block of blocksDetail(); track block.teaching_block_id) {
+              <tr>
+                <td>
+                  {{
+                  $any(block.teaching_block)?.teaching_block ?? block.teaching_block ?? '-'
+                  }}
+                </td>
+                <td class="average-cell">{{ block.daily_average ?? '-' }}</td>
+                <td class="average-cell">{{ block.practice_average ?? '-' }}</td>
+                <td class="average-cell">{{ block.exam_average ?? '-' }}</td>
+                <td class="average-cell">{{ block.attendance_average ?? '-' }}</td>
+                <td class="average-cell final-average">{{ block.teaching_block_average ?? '-' }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+        } @else if (detailType() === 'course') {
+        <div class="stat-card">
+          <span class="stat-card-label">Promedio general del curso</span>
+          <span class="stat-card-value">{{ courseAverageDetail() ?? '-' }}</span>
+        </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeDetailModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

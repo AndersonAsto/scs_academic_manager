@@ -1,0 +1,299 @@
+<div class="schedules-page">
+
+    <div class="page-header-hero">
+        <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <circle cx="520" cy="30" r="70" class="decor-circle" />
+            <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+            <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+            <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+            <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+            <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+        </svg>
+
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-rectangle-list"></i>
+            </div>
+            <div>
+                <h1>Horarios</h1>
+                <p class="subtitle">Gestiona los horarios disponibles.</p>
+            </div>
+        </div>
+
+        <button class="btn-hero btn-hero-outline" (click)="onOpenCreateSchoolDays()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Sesiones</span>
+        </button>
+
+        <button class="btn-hero btn-hero-outline" (click)="onOpenDeleteSchoolDaysBySchedule()" [disabled]="selectedYear() === null">
+            <i class="fa-solid fa-trash"></i><span> Eliminar Sesiones</span>
+        </button>
+        <button class="btn-hero btn-hero-outline" (click)="onOpenReportSchedules()">
+            <i class="fa-solid fa-file-pdf"></i>
+            <span>Reporte de Horarios</span>
+        </button>
+
+        <button class="btn-hero" (click)="onAdd()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Horario</span>
+        </button>
+    </div>
+
+    <div class="filters-container">
+
+        <div class="filters-header">
+            <i class="fa-solid fa-filter"></i>
+            <span>Filtros</span>
+        </div>
+
+        <div class="filters-content">
+
+            <!-- Buscador -->
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar docente, DNI, correo, teléfono o fechas..."
+                    [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+            </div>
+
+            <!-- Año -->
+            <div class="filter-select">
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <select [ngModel]="selectedYear()" (ngModelChange)="selectedYear.set($event)">
+                    <option [ngValue]="null">
+                        Todos los años
+                    </option>
+
+                    @for(year of years(); track year.id){
+                    <option [ngValue]="year.id">
+                        {{ year.year }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Curso -->
+            <div class="filter-select">
+                <i class="fa-solid fa-book"></i>
+
+                <select [ngModel]="selectedCourse()" (ngModelChange)="selectedCourse.set($event)">
+                    <option [ngValue]="null">
+                        Todos los cursos
+                    </option>
+
+                    @for(course of courses(); track course.id){
+                    <option [ngValue]="course.id">
+                        {{ course.course }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Grado -->
+            <div class="filter-select">
+                <i class="fa-solid fa-graduation-cap"></i>
+
+                <select [ngModel]="selectedGrade()" (ngModelChange)="selectedGrade.set($event)">
+                    <option [ngValue]="null">
+                        Todos los grados
+                    </option>
+
+                    @for(grade of grades(); track grade.id){
+                    <option [ngValue]="grade.id">
+                        {{ grade.grade }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Sección -->
+            <div class="filter-select">
+                <i class="fa-solid fa-users-rectangle"></i>
+
+                <select [ngModel]="selectedSection()" (ngModelChange)="selectedSection.set($event)">
+                    <option [ngValue]="null">
+                        Todas las secciones
+                    </option>
+
+                    @for(section of sections(); track section.id){
+                    <option [ngValue]="section.id">
+                        {{ section.section }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Tipo de Personal -->
+            <div class="filter-select">
+                <i class="fa-solid fa-user-tie"></i>
+
+                <select [ngModel]="selectedStaffType()" (ngModelChange)="selectedStaffType.set($event)">
+                    <option [ngValue]="null">
+                        Todo el personal
+                    </option>
+
+                    @for(type of staffTypes(); track type){
+                    <option [ngValue]="type">
+                        {{ type }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Tutor -->
+            <div class="filter-select">
+                <i class="fa-solid fa-chalkboard-user"></i>
+
+                <select [ngModel]="selectedTutor()" (ngModelChange)="selectedTutor.set($event)">
+                    <option [ngValue]="null">
+                        Todos
+                    </option>
+
+                    <option [ngValue]="true">
+                        Solo tutores
+                    </option>
+
+                    <option [ngValue]="false">
+                        Solo no tutores
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="filter-select">
+                <i class="fa-solid fa-calendar-week"></i>
+
+                <select [ngModel]="selectedDay()" (ngModelChange)="selectedDay.set($event)">
+
+                    <option [ngValue]="null">
+                        Todos los días
+                    </option>
+
+                    @for(day of days(); track day){
+                    <option [ngValue]="day">
+                        {{ day }}
+                    </option>
+                    }
+
+                </select>
+            </div>
+
+            <div class="filter-select">
+                <i class="fa-solid fa-clock"></i>
+
+                <select [ngModel]="selectedTimeSlot()" (ngModelChange)="selectedTimeSlot.set($event)">
+
+                    <option [ngValue]="null">
+                        Todas las franjas
+                    </option>
+
+                    @for(slot of timeSlots(); track slot.id){
+
+                    <option [ngValue]="slot.id">
+                        {{ slot.time_slot }}
+                        ({{ slot.start_time }} - {{ slot.end_time }})
+                    </option>
+
+                    }
+
+                </select>
+            </div>
+
+            <button class="btn-clear" (click)="clearFilters()">
+                <i class="fa-solid fa-rotate-left"></i>
+                Limpiar
+            </button>
+
+        </div>
+
+    </div>
+
+    @if (loading()) {
+    <div class="state-message">Cargando horarios...</div>
+    } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+    } @else if (filteredSchedules().length === 0) {
+    <div class="state-message">No se encontraron horarios.</div>
+    } @else {
+    <div class="generics-list">
+        @for (schedule of filteredSchedules(); track schedule.id) {
+        <div class="generic-card">
+            <div class="generic-info">
+                <span class="generic-id">
+                    #{{ schedule.id }}
+                </span>
+                <div class="generic-content">
+                    <span class="generic-name">
+                        {{ schedule.day }} | {{ schedule.time_slot.start_time }} - {{ schedule.time_slot.end_time }} |
+                        {{ schedule.teacher_group.course.course }}
+                    </span>
+
+                    <span class="generic-name">
+                        Grado y Sección: {{ schedule.teacher_group.grade.grade }} - {{
+                        schedule.teacher_group.section.section }}
+                    </span>
+
+                    <span class="generic-detail">
+                        Docente: {{
+                        schedule.teacher_group.academic_staff_contract.academic_staff.personal_information.names + ' '
+                        +
+                        schedule.teacher_group.academic_staff_contract.academic_staff.personal_information.fathers_surname
+                        + ' ' +
+                        schedule.teacher_group.academic_staff_contract.academic_staff.personal_information.mothers_surname
+                        }} |
+                        Tutor: {{ schedule.teacher_group.tutor ? 'Si': 'No'}}
+                    </span>
+
+                    <span class="generic-detail">Año Lectivo: {{
+                        schedule.teacher_group.academic_staff_contract.year.year }}</span>
+
+                </div>
+            </div>
+
+            <div class="generic-actions">
+                <div class="info-item">
+                    <span class="status-badge" [class.inactive]="!schedule.status">
+                        {{ schedule.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+                <button class="icon-btn info" (click)="onViewSchoolDays(schedule)" aria-label="Días lectivos">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </button>
+                <button class="icon-btn info" (click)="onInfo(schedule)" aria-label="Más información">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+                <button class="icon-btn edit" (click)="onEdit(schedule)" aria-label="Actualizar">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="icon-btn delete" (click)="onDelete(schedule)" aria-label="Eliminar">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+
+</div>
+
+
+<app-create-update-schedules [isOpen]="isFormModalOpen()" [schedule]="scheduleToEdit()"
+    (closeModal)="onCloseFormModal()" (saved)="onSaved()" />
+
+<app-create-school-days-by-schedules [isOpen]="isCreateSchoolDaysModalOpen()" (closeModal)="onCloseCreateSchoolDays()"
+    (saved)="onSchoolDaysCreated()" />
+
+<app-school-days-by-schedules [isOpen]="isSchoolDaysModalOpen()" [schedule]="scheduleSelected()"
+    (closeModal)="onCloseSchoolDaysModal()" />
+
+<app-info-schedules [isOpen]="isInfoModalOpen()" [schedule]="scheduleToView()" (closeModal)="onCloseInfoModal()" />
+
+<app-report-schedules [isOpen]="isReportSchedulesModalOpen()" [years]="years()" [grades]="grades()"
+    [sections]="sections()" (closeModal)="onCloseReportSchedules()" />
+
+<app-delete-schedules [isOpen]="isDeleteModalOpen()" [schedule]="scheduleToDelete()" (closeModal)="onCloseDeleteModal()"
+    (deleted)="onDeleted()" />
+
+<app-delete-school-days-by-schedule [isOpen]="isDeleteSchoolDaysByScheduleModalOpen()" [year]="selectedYearObject()"
+    (closeModal)="onCloseDeleteSchoolDaysBySchedule()" (deleted)="onSchoolDaysByScheduleDeleted()" />

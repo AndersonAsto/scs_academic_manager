@@ -1,0 +1,123 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div>
+          <h2>Reporte de Horarios</h2>
+        </div>
+        <button type="button" class="close-btn" (click)="onClose()" title="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <form class="modal-form">
+        <div class="form-info">
+          Seleccione el año, grado y sección para generar el reporte de horarios.
+        </div>
+
+        <!-- Campo: Año Lectivo -->
+        <div class="field">
+          <label>
+            Año lectivo
+            <span class="required">*</span>
+          </label>
+          <div class="filter-select">
+            <i class="fa-solid fa-calendar-days"></i>
+            <select
+              [ngModel]="selectedYear()"
+              (ngModelChange)="selectedYear.set($event)"
+              name="selectedYear"
+            >
+              <option [ngValue]="null">Seleccione un año</option>
+              @for (year of years(); track year.id) {
+                <option [ngValue]="year.id">
+                  {{ year.year }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Campo: Grado -->
+        <div class="field">
+          <label>
+            Grado
+            <span class="required">*</span>
+          </label>
+          <div class="filter-select">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <select
+              [ngModel]="selectedGrade()"
+              (ngModelChange)="selectedGrade.set($event)"
+              name="selectedGrade"
+            >
+              <option [ngValue]="null">Seleccione un grado</option>
+              @for (grade of grades(); track grade.id) {
+                <option [ngValue]="grade.id">
+                  {{ grade.grade }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Campo: Sección -->
+        <div class="field">
+          <label>
+            Sección
+            <span class="required">*</span>
+          </label>
+          <div class="filter-select">
+            <i class="fa-solid fa-users"></i>
+            <select
+              [ngModel]="selectedSection()"
+              (ngModelChange)="selectedSection.set($event)"
+              name="selectedSection"
+            >
+              <option [ngValue]="null">Seleccione una sección</option>
+              @for (section of sections(); track section.id) {
+                <option [ngValue]="section.id">
+                  {{ section.section }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Mensaje de Error Global -->
+        @if (error()) {
+          <div class="form-error">
+            {{ error() }}
+          </div>
+        }
+
+        <!-- Botones de Acción -->
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="onClose()"
+            [disabled]="generatingPdf()"
+          >
+            Cancelar
+          </button>
+          
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="generatePdf()"
+            [disabled]="generatingPdf()"
+          >
+            @if (generatingPdf()) {
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Generando...</span>
+            } @else {
+              <i class="fa-solid fa-file-pdf"></i>
+              <span>Generar PDF</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,175 @@
+@if (isOpen()) {
+
+<div class="modal-backdrop" (click)="onClose()">
+
+    <div class="modal-container" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <div>
+                <h2>Eliminar horario</h2>
+                <p>Esta acción afecta la configuración académica del horario.</p>
+            </div>
+
+            <button
+                class="modal-close"
+                type="button"
+                (click)="onClose()"
+                [disabled]="loading()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            @if (schedule(); as item) {
+
+            <div class="schedule-summary">
+
+                <div class="summary-row">
+                    <span class="summary-label">Horario</span>
+                    <strong>
+                        {{ item.day }}
+                        |
+                        {{ item.time_slot.start_time }} -
+                        {{ item.time_slot.end_time }}
+                    </strong>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Curso</span>
+                    <strong>
+                        {{ item.teacher_group.course.course }}
+                    </strong>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Grado y sección</span>
+                    <strong>
+                        {{ item.teacher_group.grade.grade }}
+                        -
+                        {{ item.teacher_group.section.section }}
+                    </strong>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Año lectivo</span>
+                    <strong>
+                        {{ item.teacher_group.academic_staff_contract.year.year }}
+                    </strong>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Docente</span>
+                    <strong>
+                        {{
+                            item.teacher_group.academic_staff_contract.academic_staff.personal_information.names
+                            + ' ' +
+                            item.teacher_group.academic_staff_contract.academic_staff.personal_information.fathers_surname
+                            + ' ' +
+                            item.teacher_group.academic_staff_contract.academic_staff.personal_information.mothers_surname
+                        }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="critical-warning">
+
+                <div class="option-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+
+                <div class="option-content">
+
+                    <h3>Registro importante del sistema</h3>
+
+                    <p>
+                        Este horario forma parte de la planificación académica
+                        del grupo de docente seleccionado.
+                    </p>
+
+                    <span>
+                        Su eliminación puede afectar la generación y consulta
+                        de días lectivos, y la organización de las sesiones
+                        académicas asociadas.
+                    </span>
+
+                </div>
+
+            </div>
+
+            @if (error()) {
+            <div class="error-message">
+                {{ error() }}
+            </div>
+            }
+
+            <div class="delete-options">
+
+                <button
+                    type="button"
+                    class="option-button archive"
+                    (click)="onDelete(0)"
+                    [disabled]="loading()">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-box-archive"></i>
+                    </div>
+
+                    <div class="option-content">
+                        <h3>Desactivar horario</h3>
+
+                        <p>
+                            El horario permanecerá registrado,
+                            pero quedará inactivo.
+                        </p>
+                    </div>
+
+                </button>
+
+                <button
+                    type="button"
+                    class="option-button danger"
+                    (click)="onDelete(1)"
+                    [disabled]="loading()">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+
+                    <div class="option-content">
+                        <h3>Eliminar definitivamente</h3>
+
+                        <p>
+                            El horario será eliminado permanentemente
+                            de la base de datos.
+                        </p>
+                    </div>
+
+                </button>
+
+            </div>
+
+            }
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                (click)="onClose()"
+                [disabled]="loading()">
+
+                Cancelar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

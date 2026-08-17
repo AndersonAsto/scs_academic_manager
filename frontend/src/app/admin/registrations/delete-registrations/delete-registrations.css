@@ -1,0 +1,105 @@
+@import url('../../generic-styles/generic-create-update.css');
+@import url('../../generic-styles/generic-delete.css');
+
+/* RESTAURACIÓN */
+
+.restore-option {
+    border: 1px solid #68a878;
+    background: #f1f8f3;
+}
+
+.restore-option .option-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+    background: #dcefe1;
+    color: #39734a;
+
+    font-size: 18px;
+}
+
+.restore-option .option-content {
+    flex: 1;
+}
+
+.restore-option .option-content h3 {
+    margin: 0 0 6px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #2f603d;
+}
+
+.restore-option .option-content p {
+    margin: 0 0 6px;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: #405c47;
+}
+
+.restore-option .option-content span {
+    display: block;
+
+    font-size: 13px;
+    line-height: 1.45;
+
+    color: #52725a;
+}
+
+.option-success {
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 13px;
+    line-height: 1.45;
+
+    color: #39734a;
+}
+
+/* BOTÓN RESTAURAR */
+
+.btn-restore {
+    flex-shrink: 0;
+
+    padding: 9px 16px;
+
+    border: 1px solid #39734a;
+    border-radius: 6px;
+
+    background: #39734a;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.1s ease;
+}
+
+.btn-restore:hover:not(:disabled) {
+    background: #2f603d;
+    border-color: #2f603d;
+}
+
+.btn-restore:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.btn-restore:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

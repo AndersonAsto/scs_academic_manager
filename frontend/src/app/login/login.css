@@ -1,0 +1,345 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap');
+
+:host {
+  --emerald-950: #052e22;
+  --emerald-800: #0a4f37;
+  --emerald-600: #0f7a52;
+  --emerald-400: #34d399;
+  --paper: #ffffff;
+  --ink-900: #0b1f18;
+  --ink-500: #5b6b64;
+  --gold-800: #c8a24a;
+  --rose-700: #b3261e;
+  --rose-100: #fdecea;
+  --rose-300: #f3b4ac;
+
+  display: block;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Inter', sans-serif;
+  color: var(--ink-900);
+}
+
+/* ---------- Lado del vidrio esmeralda ---------- */
+
+.hero {
+  position: relative;
+  flex: 1.4;
+  min-height: 40vh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;
+  /*
+   * Todas las capas van en un solo shorthand `background`:
+   * si se declara `background-image` aparte y luego un
+   * `background` shorthand, este último resetea la imagen
+   * previa. Aquí la foto de fondo (background.png) queda
+   * como capa base, y los degradados esmeralda encima le dan
+   * el efecto de "vidrio" que cubre la imagen.
+   */
+  background:
+    radial-gradient(120% 90% at 20% 15%, rgba(255, 255, 255, 0.08), transparent 55%),
+    radial-gradient(90% 70% at 85% 90%, rgba(0, 0, 0, 0.35), transparent 60%),
+    linear-gradient(160deg, rgba(28, 61, 49, 0.55) 0%, rgba(14, 42, 32, 0.55) 55%, rgba(8, 29, 21, 0.65) 100%),
+    url('/background.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero__glass {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    155deg,
+    rgba(5, 46, 34, 0.55) 0%,
+    rgba(15, 122, 82, 0.45) 45%,
+    rgba(5, 46, 34, 0.7) 100%
+  );
+  backdrop-filter: blur(2px) saturate(120%);
+  -webkit-backdrop-filter: blur(2px) saturate(120%);
+}
+
+.hero__watermark {
+  position: absolute;
+  right: -0.35em;
+  bottom: -0.18em;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: clamp(9rem, 24vw, 16rem);
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.07);
+  user-select: none;
+  pointer-events: none;
+  letter-spacing: -0.03em;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  padding: clamp(2rem, 5vw, 4.5rem);
+  color: #f2f7f4;
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--emerald-400);
+  margin-bottom: 0.75rem;
+}
+
+.hero__title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  line-height: 1.12;
+  margin: 0 0 0.9rem;
+}
+
+.hero__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--emerald-400);
+}
+
+.hero__tagline {
+  font-size: 0.95rem;
+  color: rgba(242, 247, 244, 0.75);
+  margin: 0;
+  max-width: 26ch;
+}
+
+/* ---------- Panel blanco (login) ---------- */
+
+.panel {
+  flex: 1;
+  min-width: 340px;
+  max-width: 520px;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 4vw, 3rem);
+  box-shadow: -24px 0 48px rgba(5, 46, 34, 0.12);
+}
+
+.panel__content {
+  width: 100%;
+  max-width: 360px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.25rem;
+}
+
+.brand__seal {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #e2e8e5;
+  box-shadow: 0 4px 14px rgba(5, 46, 34, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.brand__seal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink-900);
+  margin: 0;
+}
+
+.panel__intro h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.85rem;
+  margin: 0 0 0.4rem;
+}
+
+.panel__intro p {
+  font-size: 0.9rem;
+  color: var(--ink-500);
+  margin: 0 0 1.5rem;
+}
+
+/* ---------- Aviso de error dentro del sistema ---------- */
+
+.form-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--rose-100);
+  border: 1px solid var(--rose-300);
+  color: var(--rose-700);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.83rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+}
+
+.form-alert svg {
+  flex-shrink: 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.field input {
+  width: 100%;
+  border: 1.5px solid #e2e8e5;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  color: var(--ink-900);
+  background: #fafbfa;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.field input::placeholder {
+  color: #9ba8a2;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--emerald-600);
+  box-shadow: 0 0 0 3px rgba(15, 122, 82, 0.15);
+  background: #fff;
+}
+
+.field__password {
+  position: relative;
+}
+
+.field__password input {
+  padding-right: 2.6rem;
+}
+
+.field__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.3rem;
+  cursor: pointer;
+  color: var(--ink-500);
+  display: flex;
+}
+
+.field__toggle:hover {
+  color: var(--emerald-600);
+}
+
+.btn-submit {
+  margin-top: 0.5rem;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--emerald-600);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: var(--emerald-800);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-submit:disabled {
+  background: #b9c6c1;
+  cursor: not-allowed;
+}
+
+.panel__footer {
+  margin-top: 2rem;
+  font-size: 0.72rem;
+  color: #9ba8a2;
+  text-align: center;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .hero {
+    flex: none;
+    min-height: 34vh;
+  }
+
+  .panel {
+    max-width: none;
+    box-shadow: none;
+    padding: 2rem 1.5rem 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 28vh;
+  }
+
+  .hero__content {
+    padding: 1.5rem;
+  }
+
+  .hero__title {
+    font-size: 1.6rem;
+  }
+
+  .brand {
+    margin-bottom: 1.75rem;
+  }
+}

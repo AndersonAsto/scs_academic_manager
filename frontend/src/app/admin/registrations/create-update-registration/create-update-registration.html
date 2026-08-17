@@ -1,0 +1,271 @@
+@if (isOpen()) {
+<div class="modal-backdrop" (click)="closeModal.emit()">
+  <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ isEditMode ? 'Actualizar Matrícula' : 'Registrar Matrícula' }}</h2>
+      <button type="button" class="close-btn" (click)="closeModal.emit()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form class="modal-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="readonly-group">
+        <div class="section-title">Datos de la Matrícula</div>
+        <div class="readonly-grid">
+          <div class="field">
+            <label>Año</label>
+            <div class="filter-select">
+              <select formControlName="year_id">
+                <option [ngValue]="null">Seleccione...</option>
+                @for (y of years(); track y.id) { <option [ngValue]="y.id">{{ y.year }}</option> }
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Grado</label>
+            <div class="filter-select">
+              <select formControlName="grade_id">
+                <option [ngValue]="null">Seleccione...</option>
+                @for (g of grades(); track g.id) { <option [ngValue]="g.id">{{ g.grade }}</option> }
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Sección</label>
+            <div class="filter-select">
+              <select formControlName="section_id">
+                <option [ngValue]="null">Seleccione...</option>
+                @for (s of sections(); track s.id) { <option [ngValue]="s.id">{{ s.section }}</option> }
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Fecha de matrícula</label>
+            <input type="date" formControlName="registration_date">
+          </div>
+        </div>
+      </div>
+
+      @if (!isEditMode) {
+
+      <!-- ESTUDIANTE -->
+      <div class="field">
+        <label>Estudiante</label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" [checked]="!isExistingStudent()" (change)="isExistingStudent.set(false)">
+            Nuevo estudiante
+          </label>
+          <label>
+            <input type="radio" [checked]="isExistingStudent()" (change)="isExistingStudent.set(true)">
+            Estudiante existente (renovación)
+          </label>
+        </div>
+      </div>
+
+      @if (isExistingStudent()) {
+      <div class="field">
+        <div class="filter-select">
+          <select (change)="onStudentSelected(+$any($event.target).value)">
+            <option value="">Seleccione...</option>
+            @for (s of studentsList(); track s.id) {
+            <option [value]="s.id">
+              {{ s.personal_information.names + ' ' + s.personal_information.fathers_surname + ' ' +
+              s.personal_information.mothers_surname }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+      } @else {
+      <div class="readonly-group">
+        <div class="section-title">Información Personal del Estudiante</div>
+        <div class="readonly-grid">
+          <div class="field">
+            <label>Nombres</label>
+            <input type="text" formControlName="student_names">
+          </div>
+          <div class="field">
+            <label>Apellido paterno</label>
+            <input type="text" formControlName="student_fathers_surname">
+          </div>
+          <div class="field">
+            <label>Apellido materno</label>
+            <input type="text" formControlName="student_mothers_surname">
+          </div>
+          <div class="field">
+            <label>DNI</label>
+            <input type="text" formControlName="student_dni">
+          </div>
+          <div class="field">
+            <label>Correo</label>
+            <input type="email" formControlName="student_email">
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="text" formControlName="student_phone_number">
+          </div>
+          <div class="field">
+            <label>Dirección</label>
+            <input type="text" formControlName="student_address">
+          </div>
+          <div class="field">
+            <label>Distrito</label>
+            <input type="text" formControlName="student_district">
+          </div>
+          <div class="field">
+            <label>Provincia</label>
+            <input type="text" formControlName="student_province">
+          </div>
+          <div class="field">
+            <label>Departamento</label>
+            <input type="text" formControlName="student_department">
+          </div>
+          <div class="field">
+            <label>Género</label>
+            <div class="filter-select">
+              <select formControlName="student_gender">
+                <option value="">Seleccione...</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- APODERADO -->
+      <div class="field">
+        <label>Apoderado</label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" [checked]="!isExistingParent()" (change)="isExistingParent.set(false)">
+            Nuevo apoderado
+          </label>
+          <label>
+            <input type="radio" [checked]="isExistingParent()" (change)="isExistingParent.set(true)">
+            Apoderado existente
+          </label>
+        </div>
+      </div>
+
+      @if (isExistingParent()) {
+      <div class="field">
+        <div class="filter-select">
+          <select (change)="onParentSelected(+$any($event.target).value)">
+            <option value="">Seleccione...</option>
+            @for (p of parentsList(); track p.id) {
+            <option [value]="p.id">
+              {{ p.personal_information.names + ' ' + p.personal_information.fathers_surname + ' ' +
+              p.personal_information.mothers_surname }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+      } @else {
+      <div class="readonly-group">
+        <div class="section-title">Información Personal del Apoderado</div>
+        <div class="readonly-grid">
+          <div class="field">
+            <label>Nombres</label>
+            <input type="text" formControlName="parent_names">
+          </div>
+          <div class="field">
+            <label>Apellido paterno</label>
+            <input type="text" formControlName="parent_fathers_surname">
+          </div>
+          <div class="field">
+            <label>Apellido materno</label>
+            <input type="text" formControlName="parent_mothers_surname">
+          </div>
+          <div class="field">
+            <label>DNI</label>
+            <input type="text" formControlName="parent_dni">
+          </div>
+          <div class="field">
+            <label>Correo</label>
+            <input type="email" formControlName="parent_email">
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="text" formControlName="parent_phone_number">
+          </div>
+          <div class="field">
+            <label>Dirección</label>
+            <input type="text" formControlName="parent_address">
+          </div>
+          <div class="field">
+            <label>Distrito</label>
+            <input type="text" formControlName="parent_district">
+          </div>
+          <div class="field">
+            <label>Provincia</label>
+            <input type="text" formControlName="parent_province">
+          </div>
+          <div class="field">
+            <label>Departamento</label>
+            <input type="text" formControlName="parent_department">
+          </div>
+          <div class="field">
+            <label>Género</label>
+            <div class="filter-select">
+              <select formControlName="parent_gender">
+                <option value="">Seleccione...</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      } @else {
+
+      <!-- EDICIÓN: estudiante fijo (resumen), solo se reasigna apoderado -->
+      <div class="readonly-group">
+        <div class="section-title">Estudiante (no editable)</div>
+        <p>{{ registration()?.student?.personal_information?.names }} {{
+          registration()?.student?.personal_information?.fathers_surname }} {{
+          registration()?.student?.personal_information?.mothers_surname }}</p>
+      </div>
+
+      <div class="field">
+        <label>Apoderado</label>
+        <div class="filter-select">
+          <select formControlName="parent_id">
+            <option [ngValue]="null">Seleccione...</option>
+            @for (p of parentsList(); track p.id) {
+            <option [ngValue]="p.id">
+              {{ p.personal_information.names + ' ' + p.personal_information.fathers_surname + ' ' +
+              p.personal_information.mothers_surname }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      }
+
+      <div class="field">
+        <label>Descripción</label>
+        <textarea rows="3" formControlName="description" placeholder="Opcional"></textarea>
+      </div>
+
+      @if (errorMessage) { <div class="form-error">{{ errorMessage }}</div> }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeModal.emit()">Cancelar</button>
+        <button class="btn-primary" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Guardando...' : (isEditMode ? 'Guardar cambios' : 'Registrar matrícula') }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+}

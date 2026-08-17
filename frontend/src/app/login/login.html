@@ -1,0 +1,91 @@
+<div class="login-page">
+  <!-- Lado izquierdo: imagen + vidrio esmeralda -->
+  <section class="hero" aria-hidden="true">
+    <div class="hero__image"></div>
+    <div class="hero__glass"></div>
+    <span class="hero__watermark">22234</span>
+
+    <div class="hero__content">
+      <span class="hero__eyebrow">Institución Educativa</span>
+      <h1 class="hero__title">N.° 22234<br /><em>Santiago Calle Santos</em></h1>
+      <p class="hero__tagline">Sistema de Gestión Académica</p>
+    </div>
+  </section>
+
+  <!-- Lado derecho: panel de login -->
+  <section class="panel">
+    <div class="panel__content">
+      <div class="brand">
+        <div class="brand__seal">
+          <img src="/logo-ie-22234.png" alt="Logo I.E. N.° 22234" />
+        </div>
+        <p class="brand__name">
+          I.E. N.° 22234<br />
+          &quot;Santiago Calle Santos&quot;
+        </p>
+      </div>
+
+      <div class="panel__intro">
+        <h2>Iniciar Sesión</h2>
+        <p>Ingresa tu usuario y contraseña para acceder al sistema.</p>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="form-alert" role="alert">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9.5" />
+            <path d="M12 7.5v5.5M12 16.3v.2" stroke-linecap="round" />
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <label class="field">
+          <span class="field__label">Usuario</span>
+          <input
+            type="text"
+            formControlName="username"
+            placeholder="Ingresa tu usuario"
+            autocomplete="username"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Contraseña</span>
+          <div class="field__password">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Ingresa tu contraseña"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="field__toggle"
+              (click)="togglePassword()"
+              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              @if (showPassword()) {
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.5 5.3A10.6 10.6 0 0112 5c5.5 0 9.3 4 10.5 7-.4 1-1 2-1.8 3M6.2 6.6C4 8.2 2.5 10.3 1.5 12c1.2 3 5 7 10.5 7 1.3 0 2.5-.2 3.6-.6" />
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              }
+            </button>
+          </div>
+        </label>
+
+        <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Ingresando...' : 'Iniciar sesión' }}
+        </button>
+      </form>
+
+      <p class="panel__footer">© 2026 I.E. N.° 22234 «Santiago Calle Santos»</p>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,99 @@
+<div class="courses-page">
+
+    <div class="page-header-hero">
+        <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <circle cx="520" cy="30" r="70" class="decor-circle" />
+            <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+            <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+            <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+            <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+            <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+        </svg>
+
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-book"></i>
+            </div>
+            <div>
+                <h1>Cursos</h1>
+                <p class="subtitle">Gestiona los cursos del plan de estudios.</p>
+            </div>
+        </div>
+
+        <button class="btn-hero" (click)="onAdd()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Curso</span>
+        </button>
+    </div>
+
+    <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+            type="text"
+            placeholder="Buscar curso..."
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)"
+        />
+    </div>
+
+    @if (loading()) {
+        <div class="state-message">Cargando cursos...</div>
+    } @else if (error()) {
+        <div class="state-message error">{{ error() }}</div>
+    } @else if (filteredCourses().length === 0) {
+        <div class="state-message">No se encontraron cursos.</div>
+    } @else {
+        <div class="generics-list">
+            @for (course of filteredCourses(); track course.id) {
+                <div class="generic-card">
+
+                    <div class="generic-info">
+                        <span class="generic-id">#{{ course.id }}</span>
+                        <span class="generic-name">{{ course.course }}</span>
+                    </div>
+
+                    <div class="generic-actions">
+                        <div class="info-item">
+                            <span class="status-badge" [class.inactive]="!course.status">
+                                {{ course.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+                        <button class="icon-btn info" (click)="onInfo(course)" aria-label="Más información">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        <button class="icon-btn edit" (click)="onEdit(course)" aria-label="Actualizar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="icon-btn delete" (click)="onDelete(course)" aria-label="Eliminar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+<!-- modales igual que antes -->
+
+<app-creation-update-courses
+    [isOpen]="isFormModalOpen()"
+    [courseToEdit]="courseToEdit()"
+    (closeModal)="onCloseFormModal()"
+    (saved)="onSaved()"
+/>
+
+<app-course-info
+    [isOpen]="isInfoModalOpen()"
+    [course]="courseToView()"
+    (closeModal)="onCloseInfoModal()"
+/>
+
+<app-delete-course
+    [isOpen]="isDeleteModalOpen()"
+    [course]="courseToDelete()"
+    (closeModal)="onCloseDeleteModal()"
+    (deleted)="onDeleted()"
+/>

@@ -1,0 +1,361 @@
+@if (isOpen() && schedule()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle del Horario</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ schedule()!.id }}</span>
+                <h3>{{schedule()!.day}}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!schedule()!.status">
+                        {{ schedule()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ schedule()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(schedule()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(schedule()!.updatedAt) }}</span>
+                </div>
+
+                <div class="info-item full">
+                    <div class="info-grid-2">
+
+                        <div class="info-item full">
+                            <span class="info-label">Franja Horaria</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ schedule()!.time_slot.id }}</span>
+                                <span class="info-value">{{ schedule()!.time_slot.time_slot }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Hora de Inicio</span>
+                            <span class="info-value">{{ (schedule()!.time_slot.start_time) }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Hora de Finalización</span>
+                            <span class="info-value">{{ (schedule()!.time_slot.end_time) }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Tipo</span>
+                            <span class="info-value">{{ (schedule()!.time_slot.type) }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!schedule()!.time_slot.status">
+                                {{ schedule()!.time_slot.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="info-item full">
+                    <div class="info-grid-2">
+
+                        <div class="info-item full">
+                            <span class="info-label">Grupo de Docente</span>
+
+                            <div class="info-title">
+                                <span class="info-id">#{{ schedule()!.teacher_group.id }}</span>
+                                <span
+                                    class="info-value">{{schedule()!.teacher_group.academic_staff_contract.academic_staff.staff_type}}
+                                    | Tutor: {{
+                                    schedule()!.teacher_group.tutor ? 'Si' : 'No' }}</span>
+                            </div>
+
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!schedule()!.teacher_group.status">
+                                {{ schedule()!.teacher_group.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                        <!--curso-->
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item">
+                                    <span class="info-label">Curso</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ schedule()!.teacher_group.course.id }}</span>
+                                        <span class="info-value"> {{ schedule()!.teacher_group.course.course}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!schedule()!.teacher_group.course.status">
+                                        {{ schedule()!.teacher_group.course.status ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--grado-->
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item">
+                                    <span class="info-label">Grado</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ schedule()!.teacher_group.grade.id }}</span>
+                                        <span class="info-value"> {{ schedule()!.teacher_group.grade.grade}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!schedule()!.teacher_group.grade.status">
+                                        {{ schedule()!.teacher_group.grade.status ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--seccion-->
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item">
+                                    <span class="info-label">Sección</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ schedule()!.teacher_group.section.id }}</span>
+                                        <span class="info-value"> {{ schedule()!.teacher_group.section.section}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!schedule()!.teacher_group.section.status">
+                                        {{ schedule()!.teacher_group.section.status ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--contratos-->
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item full">
+                                    <span class="info-label">Contrato del Personal Académico</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{
+                                            schedule()!.teacher_group.academic_staff_contract.id}}</span>
+                                        <span class="info-value">
+                                            {{schedule()!.teacher_group.academic_staff_contract.year.year}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Inicio de Contrato</span>
+                                    <span class="info-value">{{
+                                        schedule()!.teacher_group.academic_staff_contract.start_date }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Fin de Contrato</span>
+                                    <span class="info-value">{{
+                                        schedule()!.teacher_group.academic_staff_contract.end_date }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Cargo</span>
+                                    <span class="info-value">{{
+                                        schedule()!.teacher_group.academic_staff_contract.position || 'Sin cargo' +
+                                        'asignado.' }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge"
+                                        [class.inactive]="!schedule()!.teacher_group.academic_staff_contract.status">
+                                        {{ schedule()!.teacher_group.academic_staff_contract.status ? 'Activo' :
+                                        'Inactivo' }}
+                                    </span>
+                                </div>
+
+                                <div class="info-item full">
+                                    <span class="info-label">Descripción</span>
+                                    <span class="info-value">{{
+                                        schedule()!.teacher_group.academic_staff_contract.description || 'Sin' +
+                                        'descripción resgistrada.' }}</span>
+                                </div>
+
+                                <div class="info-item full">
+                                    <div class="info-grid-4">
+
+                                        <div class="info-item full">
+                                            <span class="info-label">Personal Académico</span>
+                                            <div class="info-title">
+                                                <span class="info-id">#{{
+                                                    schedule()!.teacher_group.academic_staff_contract.academic_staff.id
+                                                    }}</span>
+                                                <span class="info-value"> {{
+                                                    schedule()!.teacher_group.academic_staff_contract.academic_staff.staff_type}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Estado</span>
+                                            <span class="status-badge"
+                                                [class.inactive]="!schedule()!.teacher_group.academic_staff_contract.academic_staff.status">
+                                                {{
+                                                schedule()!.teacher_group.academic_staff_contract.academic_staff.status
+                                                ?
+                                                'Activo' : 'Inactivo' }}
+                                            </span>
+                                        </div>
+
+                                        <div class="info-item full">
+                                            <span class="info-label">Descripción</span>
+                                            <span class="info-value">{{
+                                                schedule()!.teacher_group.academic_staff_contract.academic_staff.description
+                                                || 'Sin descripción registrada.'
+                                                }}</span>
+                                        </div>
+
+                                        <div class="info-item full">
+                                            <div class="info-grid-5">
+
+                                                <div class="info-item full">
+                                                    <span class="info-label">Información Personal</span>
+                                                    <div class="info-title">
+                                                        <span class="info-id">#{{
+                                                            schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.id
+                                                            }}</span>
+                                                        <span class="info-value"> {{
+                                                            schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.names}}
+                                                            {{
+                                                            schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.fathers_surname}}
+                                                            {{schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.mothers_surname}}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="info-item">
+                                                    <span class="info-label">DNI</span>
+                                                    <span class="info-value">{{
+                                                        schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.dni
+                                                        ||
+                                                        'Sin datos registrados.'
+                                                        }}</span>
+                                                </div>
+
+                                                <div class="info-item">
+                                                    <span class="info-label">Correo Electrónico</span>
+                                                    <span class="info-value">{{
+                                                        schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.email
+                                                        ||
+                                                        'Sin datos registrados.'
+                                                        }}</span>
+                                                </div>
+
+                                                <div class="info-item">
+                                                    <span class="info-label">N° de Teléfono</span>
+                                                    <span class="info-value">{{
+                                                        schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.phone_number
+                                                        || 'Sin datos registrados.'
+                                                        }}</span>
+                                                </div>
+
+                                                <div class="info-item">
+                                                    <span class="info-label">Dirección</span>
+                                                    <span class="info-value">{{
+                                                        schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.address
+                                                        || 'Sin datos registrados.'
+                                                        }}</span>
+                                                </div>
+
+                                                <div class="info-item">
+                                                    <span class="info-label">Estado</span>
+                                                    <span class="status-badge"
+                                                        [class.inactive]="!schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.status">
+                                                        {{
+                                                        schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.status
+                                                        ?
+                                                        'Activo' : 'Inactivo' }}
+                                                    </span>
+                                                </div>
+
+                                                <div class="info-item full">
+                                                    <span class="info-label">Descripción</span>
+                                                    <span class="info-value">{{
+                                                        schedule()!.teacher_group.academic_staff_contract.academic_staff.personal_information.description
+                                                        || 'Sin descripción registrada.'
+                                                        }}</span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="info-item full">
+                                    <div class="info-grid-4">
+                                        <div class="info-item">
+                                            <span class="info-label">Año Lectivo</span>
+                                            <div class="info-title">
+                                                <span class="info-id">#{{
+                                                    schedule()!.teacher_group.academic_staff_contract.year.id
+                                                    }}</span>
+                                                <span class="info-value"> {{
+                                                    schedule()!.teacher_group.academic_staff_contract.year.year}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item">
+                                            <span class="info-label">Estado</span>
+                                            <span class="status-badge"
+                                                [class.inactive]="!schedule()!.teacher_group.academic_staff_contract.year.status">
+                                                {{ schedule()!.teacher_group.academic_staff_contract.year.status ?
+                                                'Activo' : 'Inactivo'
+                                                }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+    </div>
+</div>
+}

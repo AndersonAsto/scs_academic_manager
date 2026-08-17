@@ -1,0 +1,165 @@
+<div class="generics-page">
+  <div class="page-header-hero">
+    <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <circle cx="520" cy="30" r="70" class="decor-circle" />
+      <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+      <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+      <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+      <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+      <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <div>
+        <h1>Comunicados</h1>
+        <p class="subtitle">Consulta los comunicados enviados a apoderados y estudiantes, agrupados por matrícula.</p>
+      </div>
+    </div>
+
+    <button class="btn-hero" (click)="onAdd()">
+      <i class="fa-solid fa-plus"></i>
+      <span>Nuevo Comunicado</span>
+    </button>
+  </div>
+
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-filter"></i>
+      <span>Filtros</span>
+    </div>
+
+    <div class="filters-content">
+
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar por apoderado o estudiante..." [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)" />
+      </div>
+
+      <div class="filter-select">
+        <i class="fa-solid fa-book"></i>
+
+        <select (change)="onCourseChange(
+          $any($event.target).value
+            ? +$any($event.target).value
+            : null
+        )">
+          <option value="" [selected]="selectedCourseId() === null">
+            Curso
+          </option>
+
+          @for (course of courses(); track course.id) {
+          <option [value]="course.id" [selected]="selectedCourseId() === course.id">
+            {{ course.course }}
+          </option>
+          }
+        </select>
+      </div>
+
+      @if (grades().length > 0) {
+      <div class="filter-select">
+        <i class="fa-solid fa-layer-group"></i>
+
+        <select (change)="onGradeChange(
+          $any($event.target).value
+            ? +$any($event.target).value
+            : null
+        )">
+          <option value="" [selected]="selectedGradeId() === null">
+            Grado
+          </option>
+
+          @for (grade of grades(); track grade.id) {
+          <option [value]="grade.id" [selected]="selectedGradeId() === grade.id">
+            {{ grade.grade }}
+          </option>
+          }
+        </select>
+      </div>
+      }
+
+      @if (sections().length > 0) {
+      <div class="filter-select">
+        <i class="fa-solid fa-users"></i>
+
+        <select (change)="onSectionChange(
+          $any($event.target).value
+            ? +$any($event.target).value
+            : null
+        )">
+          <option value="" [selected]="selectedSectionId() === null">
+            Sección
+          </option>
+
+          @for (section of sections(); track section.id) {
+          <option [value]="section.id" [selected]="selectedSectionId() === section.id">
+            {{ section.section }}
+          </option>
+          }
+        </select>
+      </div>
+      }
+
+      @if (
+      searchTerm() ||
+      selectedCourseId() !== null ||
+      selectedGradeId() !== null ||
+      selectedSectionId() !== null
+      ) {
+      <button type="button" class="btn-secondary" (click)="clearFilters()">
+        <i class="fa-solid fa-xmark"></i>
+        Limpiar
+      </button>
+      }
+
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="state-message">Cargando ...</div>
+  } @else if (error()) {
+  <div class="state-message error">{{ error() }}</div>
+  } @else if (filteredGroups().length === 0) {
+  <div class="state-message">No se encontraron comunicados.</div>
+  } @else {
+  <div class="generics-list">
+    @for (group of filteredGroups(); track group.registration_id) {
+    <div class="generic-card">
+      <div class="generic-info">
+        <span class="generic-id">#{{ group.registration_id }}</span>
+        <div class="generic-content">
+          <span class="generic-name">
+            {{ group.student_name }} — Apoderado: {{ group.parent_name }}
+          </span>
+          <span class="generic-detail">
+            {{ group.count }} comunicado(s) · Último: {{ group.last_date | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="generic-actions">
+        <div class="info-item">
+          @if (group.unread_count > 0) {
+          <span class="status-badge">{{ group.unread_count }} sin leer</span>
+          }
+        </div>
+        <button class="icon-btn info" (click)="onInfo(group)" aria-label="Ver comunicados">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
+
+<app-create-ads-sent [isOpen]="isFormModalOpen()" (closeModal)="onCloseFormModal()" (saved)="onSaved()" />
+
+<app-info-ads-sent [isOpen]="isInfoModalOpen()" [group]="groupToView()" (closeModal)="onCloseInfoModal()"
+  (updated)="onAnnouncementUpdated($event)" />
+
+<app-info-ads-sent [isOpen]="isInfoModalOpen()" [group]="groupToView()" (closeModal)="onCloseInfoModal()"
+  (updated)="onAnnouncementUpdated($event)" (deleted)="onAnnouncementDeleted()" />

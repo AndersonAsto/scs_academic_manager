@@ -1,0 +1,121 @@
+@if (isOpen && timeSlot) {
+<div class="modal-backdrop" (click)="onClose()">
+
+  <div class="modal-panel delete-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>Eliminar Franja Horaria</h2>
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="onClose()"
+        [disabled]="submitting()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="delete-content">
+
+      <div class="warning-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+
+      <h3 class="delete-title">
+        ¿Qué desea hacer con esta franja horaria?
+      </h3>
+
+      <p class="delete-description">
+        Esta acción afecta únicamente a la franja horaria
+        <strong>#{{ timeSlot.id }} - </strong> 
+         <strong>{{ timeSlot.time_slot }}</strong>
+        ({{ timeSlot.start_time }} - {{ timeSlot.end_time }}).
+        Seleccione una de las opciones disponibles.
+      </p>
+
+      <div class="delete-options">
+
+        <!-- DESACTIVACIÓN -->
+        <div class="delete-option deactivate-option">
+
+          <div class="option-icon">
+            <i class="fa-solid fa-eye-slash"></i>
+          </div>
+
+          <div class="option-content">
+            <h3>Desactivar franja horaria</h3>
+
+            <p>
+              La franja horaria dejará de estar activa, pero permanecerá
+              almacenada en el sistema.
+            </p>
+
+            <span class="option-warning">
+              El registro podrá conservarse para fines administrativos.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="btn-deactivate"
+            (click)="onDelete(0)"
+            [disabled]="submitting()">
+            {{ submitting() ? 'Procesando...' : 'Desactivar' }}
+          </button>
+
+        </div>
+
+        <!-- ELIMINACIÓN DEFINITIVA -->
+        <div class="delete-option destroy-option">
+
+          <div class="option-icon">
+            <i class="fa-solid fa-trash"></i>
+          </div>
+
+          <div class="option-content">
+            <h3>Eliminar definitivamente</h3>
+
+            <p>
+              La franja horaria será eliminada completamente de la
+              base de datos.
+            </p>
+
+            <span class="option-danger">
+              Esta acción es permanente y no se puede deshacer.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="btn-delete"
+            (click)="onDelete(1)"
+            [disabled]="submitting()">
+            {{ submitting() ? 'Procesando...' : 'Eliminar' }}
+          </button>
+
+        </div>
+
+      </div>
+
+      @if (errorMessage()) {
+      <div class="form-error">
+        {{ errorMessage() }}
+      </div>
+      }
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="onClose()"
+          [disabled]="submitting()">
+          Cancelar
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+}

@@ -1,0 +1,368 @@
+@if (isOpen() && registration()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle de la Matrícula</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ registration()!.id }}</span>
+                <h3>Fecha de Matrícula: {{ registration()!.registration_date }}</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!registration()!.status">
+                        {{ registration()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ registration()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(registration()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(registration()!.updatedAt) }}</span>
+                </div>
+
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item">
+                            <span class="info-label">Año Lectivo</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ registration()!.year.id }}</span>
+                                <span class="info-value"> {{ registration()!.year.year}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!registration()!.year.status">
+                                {{ registration()!.year.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!--Estudiante-->
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item full">
+                            <span class="info-label">Estudiante</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ registration()!.student.id }}</span>
+                                <span class="info-value"> Estudiante </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!registration()!.student.status">
+                                {{ registration()!.student.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                        <div class="info-item full">
+                            <span class="info-label">Descripción</span>
+                            <span class="info-value">{{ registration()!.student.description || 'Sin descripción registrada.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Creado</span>
+                            <span class="info-value">{{ formatDate(registration()!.student.createdAt) }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Última actualización</span>
+                            <span class="info-value">{{ formatDate(registration()!.student.updatedAt) }}</span>
+                        </div>
+
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item full">
+                                    <span class="info-label">Información Personal</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ registration()!.student.personal_information.id }}</span>
+                                        <span class="info-value"> {{ registration()!.student.personal_information.names}} {{
+                                            registration()!.student.personal_information.fathers_surname}}
+                                            {{registration()!.student.personal_information.mothers_surname}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">DNI</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.dni || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Correo Electrónico</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.email || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">N° de Teléfono</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.phone_number || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Dirección</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.address || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Distrito</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.district || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Provincia</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.province || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Departamento</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.department || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge" [class.inactive]="!registration()!.student.personal_information.status">
+                                        {{ registration()!.student.personal_information.status ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+
+                                <div class="info-item full">
+                                    <span class="info-label">Descripción</span>
+                                    <span class="info-value">{{ registration()!.student.personal_information.description || 'Sin descripción registrada.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Creado</span>
+                                    <span class="info-value">{{ formatDate(registration()!.student.personal_information.createdAt) }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Última actualización</span>
+                                    <span class="info-value">{{ formatDate(registration()!.student.personal_information.updatedAt) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!--Apoderado-->
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item full">
+                            <span class="info-label">Apoderado</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ registration()!.parent.id }}</span>
+                                <span class="info-value"> Apoderado </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!registration()!.parent.status">
+                                {{ registration()!.parent.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                        <div class="info-item full">
+                            <span class="info-label">Descripción</span>
+                            <span class="info-value">{{ registration()!.parent.description || 'Sin descripción registrada.'
+                                }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Creado</span>
+                            <span class="info-value">{{ formatDate(registration()!.parent.createdAt) }}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Última actualización</span>
+                            <span class="info-value">{{ formatDate(registration()!.parent.updatedAt) }}</span>
+                        </div>
+
+                        <div class="info-item full">
+                            <div class="info-grid-3">
+                                <div class="info-item full">
+                                    <span class="info-label">Información Personal</span>
+                                    <div class="info-title">
+                                        <span class="info-id">#{{ registration()!.parent.personal_information.id }}</span>
+                                        <span class="info-value"> {{ registration()!.parent.personal_information.names}} {{
+                                            registration()!.parent.personal_information.fathers_surname}}
+                                            {{registration()!.parent.personal_information.mothers_surname}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">DNI</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.dni || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Correo Electrónico</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.email || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">N° de Teléfono</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.phone_number || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Dirección</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.address || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Distrito</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.district || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Provincia</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.province || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Departamento</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.department || 'Sin datos registrados.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Estado</span>
+                                    <span class="status-badge" [class.inactive]="!registration()!.parent.personal_information.status">
+                                        {{ registration()!.parent.personal_information.status ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+
+                                <div class="info-item full">
+                                    <span class="info-label">Descripción</span>
+                                    <span class="info-value">{{ registration()!.parent.personal_information.description || 'Sin descripción registrada.'
+                                        }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Creado</span>
+                                    <span class="info-value">{{ formatDate(registration()!.parent.personal_information.createdAt) }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-label">Última actualización</span>
+                                    <span class="info-value">{{ formatDate(registration()!.parent.personal_information.updatedAt) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item">
+                            <span class="info-label">Grado</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ registration()!.grade.id }}</span>
+                                <span class="info-value"> {{ registration()!.grade.grade}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!registration()!.grade.status">
+                                {{ registration()!.grade.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="info-item full">
+                    <div class="info-grid-2">
+                        <div class="info-item">
+                            <span class="info-label">Sección</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ registration()!.section.id }}</span>
+                                <span class="info-value"> {{ registration()!.section.section}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!registration()!.section.status">
+                                {{ registration()!.section.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn-secondary"
+                (click)="downloadPdf()">
+                Descargar
+            </button>
+
+            <button
+                class="btn-secondary"
+                (click)="closeModal.emit()">
+
+                Cerrar
+            </button>
+
+        </div>
+    </div>
+</div>
+}

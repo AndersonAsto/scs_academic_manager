@@ -1,0 +1,425 @@
+@import url('../generic-styles/generic-styles.css');
+
+.profile-page {
+    gap: 20px;
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.profile-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.profile-sidebar,
+.profile-section {
+    background: #ffffff;
+    border: 1px solid #e2e6e0;
+    border-radius: 16px;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.profile-sidebar {
+    overflow: hidden;
+}
+
+.profile-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 28px 22px 24px;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 16px;
+}
+
+.avatar-image,
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+
+.avatar-image {
+    display: block;
+    object-fit: cover;
+    border: 4px solid #eef1ed;
+}
+
+.avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f2f4f0;
+    border: 4px solid #eef1ed;
+    color: #a3ada0;
+    font-size: 38px;
+}
+
+.avatar-edit-btn,
+.avatar-remove-btn {
+    position: absolute;
+    bottom: 2px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    cursor: pointer;
+    transition:
+        background .2s,
+        transform .15s;
+}
+
+.avatar-edit-btn {
+    right: 2px;
+    background: #4f7a42;
+}
+
+.avatar-remove-btn {
+    left: 2px;
+    background: #b3412f;
+}
+
+.avatar-edit-btn:hover:not(:disabled) {
+    background: #3f6335;
+}
+
+.avatar-remove-btn:hover:not(:disabled) {
+    background: #942f20;
+}
+
+.avatar-edit-btn:active:not(:disabled),
+.avatar-remove-btn:active:not(:disabled) {
+    transform: scale(.92);
+}
+
+.avatar-edit-btn:disabled,
+.avatar-remove-btn:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+.profile-identity-content {
+    min-width: 0;
+    width: 100%;
+}
+
+.profile-name {
+    margin: 0;
+    color: #1f2a1c;
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.profile-role {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    padding: 5px 11px;
+    border-radius: 8px;
+    background: rgba(79, 122, 66, .1);
+    color: #3f6335;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.profile-sidebar-divider {
+    height: 1px;
+    background: #eef1ed;
+}
+
+.profile-sidebar-info {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 22px 20px;
+}
+
+.profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 13px 0;
+    border-bottom: 1px solid #f0f2ef;
+}
+
+.profile-meta:last-child {
+    border-bottom: none;
+}
+
+.profile-meta-label {
+    color: #8a9885;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.profile-meta-value {
+    color: #1f2a1c;
+    font-size: 13px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.profile-section {
+    padding: 22px;
+}
+
+.profile-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    margin: 0;
+    color: #1f2a1c;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.section-description {
+    margin: 5px 0 0;
+    color: #8a9885;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   FORMULARIOS
+   ========================================================= */
+
+.profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.profile-form-grid .field:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
+
+.field {
+    min-width: 0;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #3c4739;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #dfe4dc;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #1f2a1c;
+    font-size: 13px;
+    outline: none;
+    transition:
+        border-color .2s,
+        box-shadow .2s;
+}
+
+.field input:hover {
+    border-color: #c8d0c5;
+}
+
+.field input:focus {
+    border-color: #4f7a42;
+    box-shadow: 0 0 0 3px rgba(79, 122, 66, .1);
+}
+
+.field-hint {
+    margin: -8px 0 18px;
+    color: #8a9885;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   DATOS PERSONALES
+   ========================================================= */
+
+.profile-readonly-badge {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: #f2f4f0;
+    color: #6b7a67;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.profile-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.profile-data-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 62px;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #edf0eb;
+    border-radius: 10px;
+    background: #fafbf9;
+}
+
+.profile-data-item-wide {
+    grid-column: 1 / -1;
+}
+
+.profile-data-label {
+    margin-bottom: 5px;
+    color: #8a9885;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.profile-data-value {
+    color: #293426;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 2px;
+}
+
+.profile-actions .btn-primary {
+    min-width: 160px;
+    justify-content: center;
+}
+
+/* =========================================================
+   ESTADOS
+   ========================================================= */
+
+.state-message.success {
+    color: #3f6335;
+    background: rgba(79, 122, 66, .08);
+    border-color: rgba(79, 122, 66, .25);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+    }
+
+    .profile-identity {
+        padding: 22px;
+    }
+
+    .profile-sidebar-divider {
+        width: 1px;
+        height: auto;
+    }
+
+    .profile-sidebar-info {
+        justify-content: center;
+        padding: 12px 22px;
+    }
+}
+
+@media (max-width: 680px) {
+    .profile-sidebar {
+        display: block;
+    }
+
+    .profile-sidebar-divider {
+        width: auto;
+        height: 1px;
+    }
+
+    .profile-sidebar-info {
+        padding: 6px 22px 18px;
+    }
+
+    .profile-form-grid,
+    .profile-data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-form-grid .field:last-child:nth-child(odd) {
+        grid-column: auto;
+    }
+
+    .profile-data-item-wide {
+        grid-column: auto;
+    }
+
+    .profile-section {
+        padding: 18px;
+    }
+
+    .profile-section-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-actions {
+        width: 100%;
+    }
+
+    .profile-actions .btn-primary {
+        width: 100%;
+    }
+}

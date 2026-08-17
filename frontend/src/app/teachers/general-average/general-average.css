@@ -1,0 +1,148 @@
+@import url('../../admin/generic-styles/generic-styles.css');
+@import url('../../styles/academic-record.style.css');
+
+/* ============================================
+   Modales de detalle (solo lectura) — bloques y registros
+   ============================================ */
+
+.modal-panel-lg {
+    max-width: 800px;
+}
+
+.detail-subtitle {
+    font-size: 12px;
+    color: #8a9885;
+    font-weight: 500;
+    margin: 2px 0 0;
+}
+
+/* Chip de bloque lectivo, reutilizable fuera de day-card */
+.block-chip {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    color: #4f7a42;
+    background: rgba(79, 122, 66, .1);
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+/* Chip de asistencia (versión de solo lectura de table-select.attendance-*) */
+.attendance-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.attendance-chip.attendance-P {
+    background: rgba(79, 122, 66, .1);
+    color: #3f6335;
+}
+
+.attendance-chip.attendance-T {
+    background: rgba(193, 127, 23, .1);
+    color: #c17f17;
+}
+
+.attendance-chip.attendance-J {
+    background: rgba(41, 98, 168, .1);
+    color: #2962a8;
+}
+
+.attendance-chip.attendance-F {
+    background: rgba(179, 65, 47, .1);
+    color: #b3412f;
+}
+
+.attendance-chip.attendance-none {
+    background: #f2f4f0;
+    color: #8a9885;
+}
+
+.day-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.day-cell-main {
+    font-weight: 600;
+    color: #1f2a1c;
+}
+
+.day-cell-week {
+    font-size: 11px;
+    color: #8a9885;
+}
+
+.incident-cell {
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #6b7a67;
+}
+
+/* Tarjeta de promedio único (modal "curso") */
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 36px 20px;
+    background: #fafcf9;
+    border: 1px solid #e2e6e0;
+    border-radius: 14px;
+}
+
+.stat-card-label {
+    font-size: 13px;
+    color: #6b7a67;
+    font-weight: 600;
+}
+
+.stat-card-value {
+    font-size: 40px;
+    font-weight: 800;
+    color: #1f2a1c;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Chip de tipo de evaluación */
+.record-type-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 9px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Calificación diaria */
+.record-type-chip.record-type-daily {
+    background: rgba(79, 122, 66, .1);
+    color: #3f6335;
+}
+
+/* Práctica */
+.record-type-chip.record-type-practice {
+    background: rgba(41, 98, 168, .1);
+    color: #2962a8;
+}
+
+/* Examen */
+.record-type-chip.record-type-exam {
+    background: rgba(193, 127, 23, .1);
+    color: #c17f17;
+}

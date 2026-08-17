@@ -1,0 +1,127 @@
+@if (isOpen()) {
+
+<div class="modal-backdrop" (click)="onBackdropClick()">
+
+    <div class="modal-panel delete-modal" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h2>Eliminar Bloques Lectivos</h2>
+
+            <button type="button" class="close-btn" (click)="onClose()" [disabled]="submitting()" aria-label="Cerrar">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="delete-content">
+
+            <div class="warning-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3 class="delete-title">
+                ¿Qué desea hacer con los bloques lectivos?
+            </h3>
+
+            <p class="delete-description">
+                Esta acción afectará todos los bloques lectivos
+                registrados para el año
+                <strong>
+                    {{ year()?.year }}.
+                </strong>
+                Seleccione una de las opciones disponibles.
+            </p>
+
+            <div class="delete-options">
+                <!-- DESACTIVACIÓN -->
+                <div class="delete-option deactivate-option">
+                    <div class="option-icon">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </div>
+                    <div class="option-content">
+                        <h3>
+                            Desactivar bloques
+                        </h3>
+                        <p>
+                            Los cuatro bloques lectivos dejarán de estar
+                            activos, pero permanecerán almacenados en el
+                            sistema.
+                        </p>
+                        <span class="option-warning">
+                            Los registros podrán conservarse para fines
+                            administrativos.
+                        </span>
+
+                    </div>
+
+                    <button type="button" class="btn-deactivate" (click)="onDelete(0)" [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Desactivar' }}
+
+                    </button>
+
+                </div>
+
+                <!-- ELIMINACIÓN DEFINITIVA -->
+
+                <div class="delete-option destroy-option">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+
+                    <div class="option-content">
+
+                        <h3>
+                            Eliminar definitivamente
+                        </h3>
+
+                        <p>
+                            Los bloques lectivos serán eliminados
+                            completamente de la base de datos.
+                        </p>
+
+                        <span class="option-danger">
+                            Esta acción es permanente y no se puede deshacer.
+                        </span>
+
+                    </div>
+
+                    <button type="button" class="btn-delete" (click)="onDelete(1)" [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Eliminar' }}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            @if (errorMessage()) {
+
+            <div class="form-error">
+                {{ errorMessage() }}
+            </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button type="button" class="btn-secondary" (click)="onClose()" [disabled]="submitting()">
+
+                    Cancelar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

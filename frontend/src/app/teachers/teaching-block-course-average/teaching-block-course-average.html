@@ -1,0 +1,191 @@
+<div class="generics-page">
+
+  <div class="page-header-hero">
+    <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <circle cx="520" cy="30" r="70" class="decor-circle" />
+      <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+      <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+      <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+      <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+      <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+      </div>
+      <div>
+        <h1>Promedio por Bloque Lectivo</h1>
+        <p class="subtitle">Calcula el promedio del bimestre por estudiante.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="filters-container">
+    <div class="filters-header">
+      <i class="fa-solid fa-filter"></i>
+      Filtros
+    </div>
+
+    <div class="filters-content">
+      <div class="filter-select">
+        <i class="fa-solid fa-calendar-days"></i>
+        <select (change)="onContractChange(+$any($event.target).value)">
+          <option value="" disabled selected>Año (contrato)</option>
+          @for (contract of contracts(); track contract.id) {
+            <option [value]="contract.id">{{ contract.year }} — {{ contract.position }}</option>
+          }
+        </select>
+      </div>
+
+      @if (teacherGroups().length > 0) {
+        <div class="filter-select">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          <select (change)="onTeacherGroupChange(+$any($event.target).value)">
+            <option value="" disabled selected>Curso / grado / sección</option>
+            @for (group of teacherGroups(); track group.id) {
+              <option [value]="group.id">{{ group.course }} — {{ group.grade }} {{ group.section }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      @if (selectedTeacherGroupId()) {
+        <button type="button" class="filter-trigger" (click)="openBlockModal()">
+          <i class="fa-solid fa-layer-group"></i>
+          {{ selectedBlock() ? 'Cambiar bloque' : 'Seleccionar bloque lectivo' }}
+        </button>
+      }
+
+      @if (selectedBlock(); as block) {
+        <div class="selected-day-chip">
+          <i class="fa-solid fa-calendar-check"></i>
+          {{ block.teaching_block }} ({{ block.start_day }} — {{ block.end_day }})
+        </div>
+
+        <button type="button" class="btn-primary" (click)="loadStudents()" [disabled]="isLoadingStudents()">
+          <i class="fa-solid fa-users"></i>
+          {{ isLoadingStudents() ? 'Cargando...' : 'Cargar estudiantes' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Modal bloques lectivos -->
+  @if (showBlockModal()) {
+    <div class="modal-backdrop" (click)="closeBlockModal()">
+      <div class="modal-panel" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Selecciona el bloque lectivo</h2>
+          <button type="button" class="close-btn" (click)="closeBlockModal()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          @if (teachingBlocks().length === 0) {
+            <p class="state-message">No hay bloques lectivos registrados para este año.</p>
+          } @else {
+            <div class="day-grid">
+              @for (block of teachingBlocks(); track block.id) {
+                <button
+                  type="button"
+                  class="day-card"
+                  [class.selected]="selectedBlock()?.id === block.id"
+                  (click)="selectBlock(block)"
+                >
+                  <span class="day-card-date">{{ block.teaching_block }}</span>
+                  <span class="day-card-label">{{ block.start_day }}</span>
+                  <span class="day-card-week">al {{ block.end_day }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeBlockModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Búsqueda -->
+   @if (students().length > 0) {
+    <div class="filters-container">
+      <div class="filter-select">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="text"
+          class="table-input"
+          placeholder="Buscar por nombres o apellidos..."
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)"
+        />
+      </div>
+    </div>
+  }
+
+  <!-- Tabla de promedios -->
+  @if (isLoadingStudents()) {
+    <p class="state-message">Cargando estudiantes...</p>
+  } @else if (students().length > 0) {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Calif. Diaria</th>
+            <th>Prácticas</th>
+            <th>Examen</th>
+            <th>Asistencia</th>
+            <th>Promedio</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (student of filteredStudents(); track student.registration_id) {
+            <tr>
+              <td class="student-name">
+                {{ student.fathers_surname }} {{ student.mothers_surname }}, {{ student.names }}
+              </td>
+              <td class="average-cell">{{ student.daily_average ?? '—' }}</td>
+              <td class="average-cell">{{ student.practice_average ?? '—' }}</td>
+              <td class="average-cell">{{ student.exam_average ?? '—' }}</td>
+              <td class="average-cell">
+                {{ student.attendance_average !== null ? (student.attendance_average * 100).toFixed(0) + '%' : '—' }}
+              </td>
+              <td class="average-cell final-average">{{ student.teaching_block_average ?? '—' }}</td>
+              <td>
+                <span class="status-badge" [class.inactive]="!student.hasRecord">
+                  {{ student.hasRecord ? 'Calculado' : 'Sin calcular' }}
+                </span>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn-primary btn-sm"
+                  (click)="calculateFor(student)"
+                  [disabled]="isCalculating(student.registration_id)"
+                >
+                  <i class="fa-solid fa-calculator"></i>
+                  {{ isCalculating(student.registration_id) ? '...' : 'Calcular' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <span class="subtitle">{{ filteredStudents().length }} de {{ students().length }} estudiante(s)</span>
+    </div>
+  } @else if (selectedBlock()) {
+    <p class="state-message">
+      Pulsa «Cargar estudiantes» para ver la lista de {{ selectedTeacherGroup()?.grade }} {{ selectedTeacherGroup()?.section }}.
+    </p>
+  }
+</div>

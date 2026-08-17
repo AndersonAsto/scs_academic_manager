@@ -1,0 +1,66 @@
+@if (isOpen() && group()) {
+<div class="modal-backdrop" (click)="closeModal.emit()">
+  <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>Comunicados Enviados</h2>
+      <button type="button" class="close-btn" (click)="closeModal.emit()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <p class="subtitle">
+      Apoderado: {{ group()?.parent_name }} — Estudiante: {{ group()?.student_name }}
+    </p>
+
+    <div class="generics-list">
+      @for (a of group()?.announcements; track a.id) {
+      <div class="generic-card">
+        <div class="generic-content">
+          <div class="generic-info">
+            <span class="generic-id">#{{ a.id }}</span>
+            <div class="generic-content">
+              <span class="generic-name">
+                {{ a.type }} @if (a.priority) { · {{ a.priority }} }
+              </span>
+              <span class="generic-subtext">{{ a.affair }}</span>
+              <span class="generic-subtext">{{ a.registration_date | date:'dd/MM/yyyy HH:mm' }}</span>
+              @if (a.description) {
+              <p class="generic-description">{{ a.description }}</p>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="generic-actions">
+          <div class="info-item">
+            <span class="status-badge" [class.inactive]="!a.status">
+              {{ a.status ? 'Activo' : 'Inactivo' }}
+            </span>
+            <span class="status-badge" [class.inactive]="!a.reading">
+              {{ a.reading ? 'Leído' : 'No leído' }}
+            </span>
+          </div>
+          <button class="icon-btn edit" (click)="onEdit(a)" aria-label="Editar">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="icon-btn delete" (click)="onDelete(a)" aria-label="Eliminar">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+
+  </div>
+</div>
+}
+
+<app-update-ads-sent [isOpen]="isEditModalOpen()" [announcement]="announcementToEdit()"
+  (closeModal)="onCloseEditModal()" (updated)="onUpdated($event)" />
+
+<app-update-ads-sent [isOpen]="isEditModalOpen()" [announcement]="announcementToEdit()"
+  (closeModal)="onCloseEditModal()" (updated)="onUpdated($event)" />
+
+<app-delete-ads-sent [isOpen]="isDeleteModalOpen()" [announcement]="announcementToDelete()"
+  (closeModal)="onCloseDeleteModal()" (deleted)="onDeleted()" />

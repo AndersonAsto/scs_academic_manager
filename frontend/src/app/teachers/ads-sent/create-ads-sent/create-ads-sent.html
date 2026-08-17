@@ -1,0 +1,129 @@
+@if (isOpen()) {
+<div class="modal-backdrop" (click)="closeModal.emit()">
+  <div class="modal-panel modal-large" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>Nuevo Comunicado</h2>
+      <button type="button" class="close-btn" (click)="closeModal.emit()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form class="modal-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="readonly-grid">
+        <div class="field">
+          <label>Año (contrato)</label>
+          <div class="filter-select">
+            <select (change)="onContractChange(+$any($event.target).value)">
+              <option value="" disabled selected>Seleccione...</option>
+              @for (contract of contracts(); track contract.id) {
+              <option [value]="contract.id">{{ contract.year }} — {{ contract.position }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        @if (teacherGroups().length > 0) {
+        <div class="field">
+          <label>Curso / grado / sección</label>
+          <div class="filter-select">
+            <select (change)="onTeacherGroupChange(+$any($event.target).value)">
+              <option value="" disabled selected>Seleccione...</option>
+              @for (group of teacherGroups(); track group.id) {
+              <option [value]="group.id">{{ group.course }} — {{ group.grade }} {{ group.section }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        }
+      </div>
+
+      @if (loadingRegistrations()) {
+      <div class="loading-registrations">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Cargando estudiantes...</span>
+      </div>
+      } @else if (registrations().length > 0) {
+      <div class="readonly-group">
+        <div class="section-title">
+          Destinatarios ({{ selectedCount }} seleccionado(s))
+        </div>
+
+        <div class="select-all-row">
+          <label class="checkbox-row">
+            <input type="checkbox" (change)="toggleAll($any($event.target).checked)">
+            <span>Seleccionar todos</span>
+          </label>
+        </div>
+
+        <div class="checkbox-list">
+          @for (r of registrations(); track r.registration_id) {
+          <label class="checkbox-row">
+            <input type="checkbox" [checked]="r.selected" (change)="toggleRegistration(r.registration_id)">
+            <span>
+              {{ r.fathers_surname }} {{ r.mothers_surname }}, {{ r.names }}
+            </span>
+          </label>
+          }
+        </div>
+      </div>
+      }
+
+      <div class="readonly-grid">
+        <div class="field">
+          <label>Tipo <span class="required">*</span></label>
+          <div class="filter-select">
+            <select formControlName="type">
+              <option value="">Seleccione...</option>
+              <option value="Reuniones">Reuniones</option>
+              <option value="Avisos">Avisos</option>
+              <option value="Inasistencias">Inasistencias</option>
+              <option value="Bajo rendimiento">Bajo rendimiento</option>
+              <option value="Eventos">Eventos</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Prioridad</label>
+          <div class="filter-select">
+            <select formControlName="priority">
+              <option value="">Sin prioridad</option>
+              <option value="Baja">Baja</option>
+              <option value="Media">Media</option>
+              <option value="Alta">Alta</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Fecha <span class="required">*</span></label>
+          <input type="datetime-local" formControlName="registration_date">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Asunto <span class="required">*</span></label>
+        <textarea rows="2" formControlName="affair"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Descripción</label>
+        <textarea rows="3" formControlName="description" placeholder="Opcional"></textarea>
+      </div>
+
+      @if (errorMessage) { <div class="form-error">{{ errorMessage }}</div> }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeModal.emit()">Cancelar</button>
+        <button class="btn-primary" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Enviando...' : 'Enviar comunicado' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+}

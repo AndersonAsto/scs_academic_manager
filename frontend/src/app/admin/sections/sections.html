@@ -1,0 +1,81 @@
+<div class="sections-page">
+
+    <div class="page-header-hero">
+        <svg class="hero-decor" viewBox="0 0 600 160" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <circle cx="520" cy="30" r="70" class="decor-circle" />
+            <circle cx="470" cy="130" r="34" class="decor-circle-alt" />
+            <rect x="380" y="-20" width="90" height="90" rx="22" class="decor-rect" transform="rotate(18 425 25)" />
+            <line x1="300" y1="180" x2="600" y2="-20" class="decor-line" />
+            <line x1="340" y1="180" x2="600" y2="20" class="decor-line" />
+            <line x1="380" y1="180" x2="600" y2="60" class="decor-line" />
+        </svg>
+
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fa-regular fa-object-ungroup"></i>
+            </div>
+            <div>
+                <h1>Secciones</h1>
+                <p class="subtitle">Gestiona los secciones disponibles en el colegio.</p>
+            </div>
+        </div>
+
+        <button class="btn-hero" (click)="onAdd()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Agregar Sección</span>
+        </button>
+    </div>
+
+    <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar sección..." [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)" />
+    </div>
+
+    @if (loading()) {
+    <div class="state-message">Cargando secciones...</div>
+    } @else if (error()) {
+    <div class="state-message error">{{ error() }}</div>
+    } @else if (filteredSections().length === 0) {
+    <div class="state-message">No se encontraron secciones.</div>
+    } @else {
+    <div class="generics-list">
+        @for (section of filteredSections(); track section.id) {
+        <div class="generic-card">
+
+            <div class="generic-info">
+                <span class="generic-id">#{{ section.id }}</span>
+                <span class="generic-name">{{ section.section }}</span>
+            </div>
+
+            <div class="generic-actions">
+                <div class="info-item">
+                    <span class="status-badge" [class.inactive]="!section.status">
+                        {{ section.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+                <button class="icon-btn info" (click)="onInfo(section)" aria-label="Más información">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+                <button class="icon-btn edit" (click)="onEdit(section)" aria-label="Actualizar">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="icon-btn delete" (click)="onDelete(section)" aria-label="Eliminar">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+
+</div>
+
+<app-create-update-section [isOpen]="isFormModalOpen()" [sectionToEdit]="sectionToEdit()"
+    (closeModal)="onCloseFormModal()" (saved)="onSaved()" />
+
+<app-info-section [isOpen]="isInfoModalOpen()" [section]="sectionToView()" (closeModal)="onCloseInfoModal()" />
+
+<app-delete-section [isOpen]="isDeleteModalOpen()" [section]="sectionToDelete()" (closeModal)="onCloseDeleteModal()"
+    (deleted)="onDeleted()" />

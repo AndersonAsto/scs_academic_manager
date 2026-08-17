@@ -1,0 +1,393 @@
+.generics-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2a1c;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #6b7a67;
+    margin: 4px 0 0;
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #4f7a42;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 122, 66, .25);
+    transition: background .2s, transform .15s;
+}
+
+.btn-primary:hover {
+    background: #3f6335;
+}
+
+.btn-primary:active {
+    transform: scale(.97);
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid #e2e6e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    max-width: 420px;
+}
+
+.search-bar i {
+    color: #8a9885;
+    font-size: 14px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    color: #1f2a1c;
+    background: transparent;
+}
+
+.search-bar input::placeholder {
+    color: #a3ada0;
+}
+
+.state-message {
+    padding: 32px;
+    text-align: center;
+    color: #6b7a67;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e6e0;
+}
+
+.state-message.error {
+    color: #b3412f;
+    background: #fdf1ef;
+    border-color: #f3d3cd;
+}
+
+.generics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.generic-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid #e2e6e0;
+    border-radius: 14px;
+    padding: 14px 18px;
+    transition: box-shadow .2s, transform .15s;
+}
+
+.generic-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+    transform: translateY(-1px);
+}
+
+.generic-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    overflow: hidden;
+}
+
+.generic-id {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4f7a42;
+    background: rgba(79, 122, 66, .1);
+    padding: 4px 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.generic-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2a1c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.generic-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background .2s, transform .15s;
+}
+
+.icon-btn.info {
+    background: rgba(79, 122, 66, .1);
+    color: #4f7a42;
+}
+
+.icon-btn.info:hover {
+    background: rgba(79, 122, 66, .18);
+}
+
+.icon-btn.edit {
+    background: rgba(41, 98, 168, .1);
+    color: #2962a8;
+}
+
+.icon-btn.edit:hover {
+    background: rgba(41, 98, 168, .18);
+}
+
+.icon-btn.delete {
+    background: rgba(179, 65, 47, .1);
+    color: #b3412f;
+}
+
+.icon-btn.delete:hover {
+    background: rgba(179, 65, 47, .18);
+}
+
+.icon-btn:active {
+    transform: scale(.92);
+}
+
+.status-badge {
+    align-self: flex-start;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(79, 122, 66, .12);
+    color: #3f6335;
+}
+
+.status-badge.inactive {
+    background: rgba(179, 65, 47, .12);
+    color: #b3412f;
+}
+
+.generic-content{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.generic-detail{
+    font-size:13px;
+    color:#6b7a67;
+}
+
+.btn-tertiary {
+    background: #b3412f;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+
+.icon-btn.restore {
+    color: #2f855a;
+}
+
+.icon-btn.restore:hover {
+    background: #f0fff4;
+    color: #276749;
+}
+
+.page-header-hero {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 26px 32px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #3f6335 0%, #4f7a42 55%, #5c8f4d 100%);
+    box-shadow: 0 10px 30px rgba(63, 99, 53, .25);
+}
+
+.hero-decor {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.decor-circle {
+    fill: none;
+    stroke: rgba(255, 255, 255, .18);
+    stroke-width: 1.5;
+}
+
+.decor-circle-alt {
+    fill: rgba(255, 255, 255, .06);
+    stroke: rgba(255, 255, 255, .12);
+    stroke-width: 1.5;
+}
+
+.decor-rect {
+    fill: rgba(255, 255, 255, .05);
+    stroke: rgba(255, 255, 255, .15);
+    stroke-width: 1.5;
+}
+
+.decor-line {
+    stroke: rgba(255, 255, 255, .14);
+    stroke-width: 1.5;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.hero-icon {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .16);
+    border: 1px solid rgba(255, 255, 255, .2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    color: white;
+}
+
+.page-header-hero h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.page-header-hero .subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, .75);
+    margin: 4px 0 0;
+}
+
+.btn-hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: #3f6335;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    transition: background .2s, transform .15s;
+    flex-shrink: 0;
+}
+
+.btn-hero:hover {
+    background: #f0f5ee;
+}
+
+.btn-hero:active {
+    transform: scale(.97);
+}
+
+@media (max-width: 640px) {
+    .page-header-hero {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 22px 20px;
+    }
+
+    .btn-hero {
+        justify-content: center;
+    }
+}
+
+.hero-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+/* Variante para un segundo botón que no debe competir visualmente con el principal */
+.btn-hero-outline {
+    background: rgba(255, 255, 255, .12);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, .35);
+    box-shadow: none;
+}
+
+.btn-hero-outline:hover {
+    background: rgba(255, 255, 255, .2);
+}
+
+@media (max-width: 640px) {
+    .hero-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .hero-actions .btn-hero {
+        flex: 1;
+        justify-content: center;
+    }
+}

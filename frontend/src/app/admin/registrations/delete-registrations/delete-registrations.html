@@ -1,0 +1,233 @@
+@if (isOpen() && registration()) {
+
+<div
+    class="modal-backdrop"
+    (click)="onBackdropClick()">
+
+    <div
+        class="modal-panel delete-modal"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h2>Gestionar Matrícula</h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                (click)="onClose()"
+                [disabled]="submitting()"
+                aria-label="Cerrar">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="delete-content">
+
+            <div class="warning-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3 class="delete-title">
+
+                @if (registration()?.status) {
+                    ¿Qué desea hacer con esta matrícula?
+                } @else {
+                    ¿Desea restaurar esta matrícula?
+                }
+
+            </h3>
+
+            <p class="delete-description">
+
+                Matrícula
+                <strong>#{{ registration()?.id }}</strong>
+
+                del año lectivo
+                <strong>{{ registration()?.year?.year }}</strong>,
+
+                correspondiente a
+
+                <strong>
+                    {{ registration()?.student?.personal_information?.names }}
+                    {{ registration()?.student?.personal_information?.fathers_surname }}
+                </strong>.
+
+            </p>
+
+            @if (registration()?.status) {
+
+                <div class="delete-options">
+
+                    <!-- DESACTIVACIÓN -->
+
+                    <div class="delete-option deactivate-option">
+
+                        <div class="option-icon">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </div>
+
+                        <div class="option-content">
+
+                            <h3>
+                                Desactivar matrícula
+                            </h3>
+
+                            <p>
+
+                                La matrícula dejará de estar activa
+                                para el sistema, pero permanecerá
+                                almacenada en la base de datos.
+
+                            </p>
+
+                            <span class="option-warning">
+
+                                La información del estudiante,
+                                apoderado y sus datos personales
+                                no serán eliminados. Únicamente se
+                                desactivará esta matrícula.
+
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-deactivate"
+                            (click)="onDelete(0)"
+                            [disabled]="submitting()">
+
+                            {{ submitting() ? 'Procesando...' : 'Desactivar' }}
+
+                        </button>
+
+                    </div>
+
+                    <!-- ELIMINACIÓN DEFINITIVA -->
+
+                    <div class="delete-option destroy-option">
+
+                        <div class="option-icon">
+                            <i class="fa-solid fa-trash"></i>
+                        </div>
+
+                        <div class="option-content">
+
+                            <h3>
+                                Eliminar definitivamente
+                            </h3>
+
+                            <p>
+
+                                La matrícula será eliminada
+                                permanentemente de la base de datos.
+
+                            </p>
+
+                            <span class="option-danger">
+
+                                Esta acción elimina el registro de
+                                matrícula y puede afectar la trazabilidad
+                                de la relación académica del estudiante
+                                con el año lectivo, grado y sección
+                                registrados en esta matrícula.
+
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-delete"
+                            (click)="onDelete(1)"
+                            [disabled]="submitting()">
+
+                            {{ submitting() ? 'Procesando...' : 'Eliminar' }}
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            } @else {
+
+                <!-- RESTAURACIÓN -->
+
+                <div class="delete-option restore-option">
+
+                    <div class="option-icon">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </div>
+
+                    <div class="option-content">
+
+                        <h3>
+                            Restaurar matrícula
+                        </h3>
+
+                        <p>
+
+                            La matrícula volverá a estar activa
+                            y disponible para los procesos académicos
+                            asociados al año lectivo.
+
+                        </p>
+
+                        <span class="option-success">
+
+                            Los datos de la matrícula no serán recreados
+                            ni modificados. Se recuperará el registro
+                            previamente desactivado.
+
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-restore"
+                        (click)="onRestore()"
+                        [disabled]="submitting()">
+
+                        {{ submitting() ? 'Procesando...' : 'Restaurar' }}
+
+                    </button>
+
+                </div>
+
+            }
+
+            @if (errorMessage()) {
+
+                <div class="form-error">
+                    {{ errorMessage() }}
+                </div>
+
+            }
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="onClose()"
+                    [disabled]="submitting()">
+
+                    Cancelar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

@@ -1,0 +1,76 @@
+@if (isOpen() && weighting()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Detalle de la Ponderación</h2>
+            <button class="close-btn" (click)="closeModal.emit()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="info-title">
+                <span class="info-id">#{{ weighting()!.id }}</span>
+                <h3>{{ weighting()!.type }} | {{ weighting()!.weighting}}%</h3>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">Estado</span>
+                    <span class="status-badge" [class.inactive]="!weighting()!.status">
+                        {{ weighting()!.status ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+
+                <div class="info-item full">
+                    <span class="info-label">Descripción</span>
+                    <span class="info-value">{{ weighting()!.description || 'Sin descripción registrada.' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Creado</span>
+                    <span class="info-value">{{ formatDate(weighting()!.createdAt) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última actualización</span>
+                    <span class="info-value">{{ formatDate(weighting()!.updatedAt) }}</span>
+                </div>
+
+                <div class="info-item full">
+
+                    <div class="info-grid-2">
+
+                        <div class="info-item">
+                            <span class="info-label">Año Lectivo</span>
+                            <div class="info-title">
+                                <span class="info-id">#{{ weighting()!.year.id }}</span>
+                                <span class="info-value"> {{ weighting()!.year.year}}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="status-badge" [class.inactive]="!weighting()!.year.status">
+                                {{ weighting()!.year.status ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeModal.emit()">Cerrar</button>
+        </div>
+
+    </div>
+</div>
+}

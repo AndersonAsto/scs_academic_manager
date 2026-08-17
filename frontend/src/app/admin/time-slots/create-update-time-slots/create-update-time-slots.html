@@ -1,0 +1,108 @@
+@if (isOpen()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>{{ isEditMode ? 'Actualizar Franja Horaria' : 'Nueva Franja Horaria' }}</h2>
+            <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
+
+            <div class="field">
+                <label>
+                    Franja horaria
+                    <span class="required">*</span>
+                </label>
+
+                <div class="filter-select">
+                    <i class="fa-solid fa-clock"></i>
+
+                    <select formControlName="time_slot">
+
+                        @for(option of timeSlotOptions; track option){
+
+                        <option [value]="option">
+                            {{ option }}
+                        </option>
+
+                        }
+
+                    </select>
+                </div>
+
+                @if(form.get('time_slot')?.invalid &&
+                form.get('time_slot')?.touched){
+
+                <span class="field-error">
+                    Seleccione una franja horaria.
+                </span>
+
+                }
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Hora de inicio
+                    <span class="required">*</span>
+                </label>
+
+                <input type="time" formControlName="start_time">
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Hora de fin
+                    <span class="required">*</span>
+                </label>
+
+                <input type="time" formControlName="end_time">
+
+            </div>
+
+            <div class="field">
+                <label>Tipo<span class="required">*</span>
+                </label>
+                <div class="filter-select">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <select formControlName="type">
+                        @for(option of typeOptions; track option){
+                        <option [value]="option">
+                            {{ option }}
+                        </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="description">Descripción</label>
+                <textarea id="description" formControlName="description" rows="3" placeholder="Opcional"></textarea>
+            </div>
+
+            @if (errorMessage) {
+            <div class="form-error">{{ errorMessage }}</div>
+            }
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" (click)="onCancel()">Cancelar</button>
+                <button type="submit" class="btn-primary" [disabled]="submitting">
+                    @if (submitting) {
+                    <span>Guardando...</span>
+                    } @else {
+                    <span>{{ isEditMode ? 'Guardar cambios' : 'Crear franja horaria' }}</span>
+                    }
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+}

@@ -1,0 +1,7 @@
+@import url('../generic-styles/generic-styles.css');
+
+.sections-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

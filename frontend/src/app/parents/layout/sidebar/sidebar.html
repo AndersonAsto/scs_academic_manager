@@ -1,0 +1,56 @@
+<div class="sidebar" [class.collapsed]="sidebarService.collapsed()">
+
+    <div class="sidebar-header">
+        <div class="user-info">
+            @if (authService.avatarUrl(); as avatarUrl) {
+            <img [src]="avatarUrl" alt="Foto de perfil" class="user-avatar" />
+            } @else {
+            <div class="user-avatar-placeholder">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            }
+
+            <div class="user-text">
+                @if (authService.currentUser(); as user) {
+                <span class="user-name">
+                    {{ authService.displayName() }}
+                </span>
+                <span class="user-role">
+                    {{ user.role }}
+                </span>
+                <button type="button" class="logout-btn" (click)="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="logout-text">Cerrar Sesión</span>
+                </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <nav>
+
+        @for(item of menu; track item.route){
+        <a [routerLink]="item.route" routerLinkActive="active">
+            <i [class]="item.icon"></i>
+            <span class="nav-text">{{ item.title }}</span>
+        </a>
+        }
+
+    </nav>
+
+    <button class="collapse-btn" (click)="sidebarService.toggle()" aria-label="Alternar barra lateral">
+        <i class="fa-solid" [class.fa-chevron-left]="!sidebarService.collapsed()"
+            [class.fa-chevron-right]="sidebarService.collapsed()"></i>
+    </button>
+
+</div>
+
+@if (sidebarService.collapsed()) {
+<button class="mobile-open-btn" (click)="sidebarService.toggle()" aria-label="Abrir barra lateral">
+    <i class="fa-solid fa-bars"></i>
+</button>
+}
+
+@if (!sidebarService.collapsed()) {
+<div class="sidebar-backdrop" (click)="sidebarService.close()"></div>
+}

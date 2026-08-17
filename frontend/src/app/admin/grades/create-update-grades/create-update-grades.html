@@ -1,0 +1,56 @@
+@if (isOpen()) {
+<div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>{{ isEditMode ? 'Actualizar Grado' : 'Nuevo Grado' }}</h2>
+            <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
+
+            <div class="field">
+                <label for="grade">Grado<span class="required">*</span></label>
+                <input
+                    id="grade"
+                    type="text"
+                    formControlName="grade"
+                    placeholder="Ej. Primero"
+                />
+                @if (form.get('grade')?.invalid && form.get('grade')?.touched) {
+                    <span class="field-error">El grado es obligatorio.</span>
+                }
+            </div>
+
+            <div class="field">
+                <label for="description">Descripción</label>
+                <textarea
+                    id="description"
+                    formControlName="description"
+                    rows="3"
+                    placeholder="Opcional"
+                ></textarea>
+            </div>
+
+            @if (errorMessage) {
+                <div class="form-error">{{ errorMessage }}</div>
+            }
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" (click)="onCancel()">Cancelar</button>
+                <button type="submit" class="btn-primary" [disabled]="submitting">
+                    @if (submitting) {
+                        <span>Guardando...</span>
+                    } @else {
+                        <span>{{ isEditMode ? 'Guardar cambios' : 'Crear grado' }}</span>
+                    }
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+}
