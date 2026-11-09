@@ -53,7 +53,7 @@ app.use('/api', appRoutes.UsersRoutes);
 app.use('/api', appRoutes.RegistrationsRoutes);
 app.use('/api', appRoutes.ParentsRoutes);
 app.use('/api', appRoutes.PersonalInformationRoutes);
-app.use('/api', appRoutes.StduentsRoutes);
+app.use('/api', appRoutes.StudentRoutes);
 app.use('/api', appRoutes.WeightingsRoutes);
 app.use('/api', appRoutes.TeacherGroupsRoutes);
 app.use('/api', appRoutes.SchedulesRoutes);
@@ -64,6 +64,7 @@ app.use('/api', appRoutes.CourseAverageRoutes);
 app.use('/api', appRoutes.GeneralAverageRoutes);
 app.use('/api', appRoutes.AnnouncementsRoutes);
 app.use('/api', appRoutes.DashboardRoutes);
+app.use('/api', appRoutes.RiskRoutes);
 
 app.get('/', (req, res) => {
     res.send('Bienvenido');

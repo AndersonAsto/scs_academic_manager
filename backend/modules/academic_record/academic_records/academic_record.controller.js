@@ -11,6 +11,9 @@ const AcademicRecords = require('./academic_record.model');
 const SchoolDays = require('../../temporality/schoolDays.model');
 const TimeSlots = require('../../time_slots/time_slots.model');
 const TeachingBlocks = require('../../temporality/teachingBlocks.model');
+const TeachingBlockCourseAverageModel = require(
+    '../teaching_block_course_average/teaching_block_course_average.model'
+);
 
 exports.createAcademicRecords = async (req, res) => {
     const {
@@ -499,16 +502,24 @@ async function buildStudentDetailedReport(registrationId, yearId) {
     };
 }
 
+const { generateStudentNarrative } = require('../../ia/narrative-reports/narrative.service');
+
 exports.downloadStudentDetailedReportExcel = async (req, res) => {
     try {
         const { registration_id, year_id } = req.query;
 
         if (!registration_id || !year_id) {
-            return res.status(400).json({ message: 'Debe especificar la matrícula y el año.' });
+            return res.status(400).json({
+                message: 'Debe especificar la matrícula y el año.'
+            });
         }
 
         if (req.user.role === 'Docente') {
-            const isTutor = await verifyDocenteIsTutorOfRegistration(req.user.sub, registration_id, year_id);
+            const isTutor = await verifyDocenteIsTutorOfRegistration(
+                req.user.sub,
+                registration_id,
+                year_id
+            );
 
             if (!isTutor) {
                 return res.status(403).json({
@@ -517,54 +528,210 @@ exports.downloadStudentDetailedReportExcel = async (req, res) => {
             }
         }
 
-        const reportData = await buildStudentDetailedReport(registration_id, year_id);
+        const reportData = await buildStudentDetailedReport(
+            registration_id,
+            year_id
+        );
 
         if (!reportData) {
-            return res.status(404).json({ message: 'Matrícula no encontrada.' });
+            return res.status(404).json({
+                message: 'Matrícula no encontrada.'
+            });
         }
 
         const workbook = new ExcelJS.Workbook();
+
         workbook.creator = INSTITUTION_NAME;
         workbook.created = new Date();
 
-        const studentFullName = `${reportData.student.fathers_surname} ${reportData.student.mothers_surname}, ${reportData.student.names}`;
+        const studentFullName =
+            `${reportData.student.fathers_surname} ` +
+            `${reportData.student.mothers_surname}, ` +
+            `${reportData.student.names}`;
 
         for (const course of reportData.courses) {
-            // Excel limita nombres de hoja a 31 caracteres y prohíbe ciertos símbolos
-            const safeName = course.course.replace(/[\\/*?:[\]]/g, '').substring(0, 31);
-            const sheet = workbook.addWorksheet(safeName || `Curso ${course.teacher_group_id}`);
+
+            // ---------------------------------------------------------
+            // Nombre de la hoja
+            // ---------------------------------------------------------
+
+            const safeName = course.course
+                .replace(/[\\/*?:[\]]/g, '')
+                .substring(0, 31);
+
+            const sheet = workbook.addWorksheet(
+                safeName || `Curso ${course.teacher_group_id}`
+            );
+
+            // ---------------------------------------------------------
+            // Encabezado institucional
+            // ---------------------------------------------------------
 
             sheet.mergeCells('A1:H1');
+
             sheet.getCell('A1').value = INSTITUTION_NAME;
-            sheet.getCell('A1').font = { bold: true, size: 13 };
-            sheet.getCell('A1').alignment = { horizontal: 'center' };
+
+            sheet.getCell('A1').font = {
+                bold: true,
+                size: 13
+            };
+
+            sheet.getCell('A1').alignment = {
+                horizontal: 'center'
+            };
+
+            // ---------------------------------------------------------
+            // Información del estudiante
+            // ---------------------------------------------------------
 
             const infoRows = [
                 ['Estudiante:', studentFullName],
                 ['Curso:', course.course],
-                ['Docente:', `${course.teacher_fathers_surname} ${course.teacher_mothers_surname}, ${course.teacher_names}`],
+                [
+                    'Docente:',
+                    `${course.teacher_fathers_surname} ` +
+                    `${course.teacher_mothers_surname}, ` +
+                    `${course.teacher_names}`
+                ],
                 ['Año:', reportData.year],
-                ['Grado y Sección:', `${reportData.grade} ${reportData.section}`],
+                [
+                    'Grado y Sección:',
+                    `${reportData.grade} ${reportData.section}`
+                ],
             ];
 
             infoRows.forEach(([label, value], i) => {
                 const rowNumber = 3 + i;
+
                 sheet.getCell(`A${rowNumber}`).value = label;
-                sheet.getCell(`A${rowNumber}`).font = { bold: true };
+                sheet.getCell(`A${rowNumber}`).font = {
+                    bold: true
+                };
+
                 sheet.getCell(`B${rowNumber}`).value = value;
             });
 
-            const headerRowNumber = 9;
+            // ---------------------------------------------------------
+            // Promedios del curso
+            // ---------------------------------------------------------
+
+            const latestBlockAverage =
+                await TeachingBlockCourseAverageModel.findOne({
+                    where: {
+                        registration_id,
+                        teacher_group_id: course.teacher_group_id,
+                    },
+                    order: [
+                        ['teaching_block_id', 'DESC']
+                    ],
+                });
+
+            // ---------------------------------------------------------
+            // Narrativa generada por IA
+            // ---------------------------------------------------------
+
+            let narrative = '';
+
+            try {
+                narrative = await generateStudentNarrative({
+                    names: reportData.student.names,
+                    course: course.course,
+
+                    dailyAverage:
+                        latestBlockAverage?.daily_average ?? null,
+
+                    practiceAverage:
+                        latestBlockAverage?.practice_average ?? null,
+
+                    examAverage:
+                        latestBlockAverage?.exam_average ?? null,
+
+                    attendanceAverage:
+                        latestBlockAverage?.attendance_average ?? null,
+
+                    blockAverage:
+                        latestBlockAverage?.teaching_block_average ?? null,
+                });
+            } catch (error) {
+                console.error(
+                    `Error generando narrativa para ${course.course}:`,
+                    error.message
+                );
+
+                narrative =
+                    'No se pudo generar el resumen narrativo para este curso.';
+            }
+
+            // ---------------------------------------------------------
+            // Mostrar narrativa en Excel
+            // ---------------------------------------------------------
+
+            sheet.mergeCells('A9:H9');
+
+            const narrativeCell = sheet.getCell('A9');
+
+            narrativeCell.value = narrative;
+
+            narrativeCell.alignment = {
+                wrapText: true,
+                vertical: 'top'
+            };
+
+            narrativeCell.font = {
+                italic: true,
+                size: 10
+            };
+
+            sheet.getRow(9).height = 45;
+
+            // ---------------------------------------------------------
+            // Encabezados de registros
+            // ---------------------------------------------------------
+
+            const headerRowNumber = 11;
+
             const headerRow = sheet.getRow(headerRowNumber);
-            headerRow.values = ['Fecha', 'Día', 'Semana', 'Bloque', 'Tipo', 'Asistencia', 'Calificación', 'Incidencia'];
-            headerRow.font = { bold: true };
+
+            headerRow.values = [
+                'Fecha',
+                'Día',
+                'Semana',
+                'Bloque',
+                'Tipo',
+                'Asistencia',
+                'Calificación',
+                'Incidencia'
+            ];
+
+            headerRow.font = {
+                bold: true
+            };
+
             headerRow.eachCell((cell) => {
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
-                cell.border = { bottom: { style: 'thin' } };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: {
+                        argb: 'FFEFEFEF'
+                    }
+                };
+
+                cell.border = {
+                    bottom: {
+                        style: 'thin'
+                    }
+                };
             });
 
+            // ---------------------------------------------------------
+            // Registros académicos
+            // ---------------------------------------------------------
+
             course.rows.forEach((row, index) => {
-                const excelRow = sheet.getRow(headerRowNumber + 1 + index);
+
+                const excelRow =
+                    sheet.getRow(headerRowNumber + 1 + index);
+
                 excelRow.values = [
                     row.school_day,
                     row.day,
@@ -572,16 +739,30 @@ exports.downloadStudentDetailedReportExcel = async (req, res) => {
                     row.teaching_block,
                     row.type ?? '',
                     row.attendance ?? '',
-                    row.score ?? '', // null → celda vacía
+                    row.score ?? '',
                     row.incident ?? '',
                 ];
             });
 
+            // ---------------------------------------------------------
+            // Ancho de columnas
+            // ---------------------------------------------------------
+
             sheet.columns = [
-                { width: 14 }, { width: 12 }, { width: 10 }, { width: 14 },
-                { width: 18 }, { width: 12 }, { width: 14 }, { width: 30 },
+                { width: 14 },
+                { width: 12 },
+                { width: 10 },
+                { width: 14 },
+                { width: 18 },
+                { width: 12 },
+                { width: 14 },
+                { width: 30 },
             ];
         }
+
+        // -------------------------------------------------------------
+        // Nombre del archivo
+        // -------------------------------------------------------------
 
         const fileName = [
             'Reporte_Detallado',
@@ -593,18 +774,35 @@ exports.downloadStudentDetailedReportExcel = async (req, res) => {
             reportData.section,
         ]
             .join('_')
-            .replace(/\s+/g, '_')       // espacios → guion bajo (ej. "1° Grado" → "1°_Grado")
-            .replace(/[\\/:*?"<>|]/g, '') // caracteres no válidos en nombres de archivo
+            .replace(/\s+/g, '_')
+            .replace(/[\\/:*?"<>|]/g, '')
             + '.xlsx';
 
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        // -------------------------------------------------------------
+        // Descargar Excel
+        // -------------------------------------------------------------
+
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${fileName}"`
+        );
 
         await workbook.xlsx.write(res);
+
         res.end();
+
     } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({ message: 'Error interno del servidor. Inténtelo más tarde.' });
+
+        console.error(error);
+
+        return res.status(500).json({
+            message: 'Error interno del servidor. Inténtelo más tarde.'
+        });
     }
 };
 

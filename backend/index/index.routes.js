@@ -13,7 +13,7 @@ const AcademicStaffContractsRoutes = require('../modules/users/academic_staff_co
 const UsersRoutes = require('../modules/users/users.routes');
 const RegistrationsRoutes = require('../modules/users/registrations.routes');
 const ParentsRoutes = require('../modules/users/parents.routes');
-const StduentsRoutes = require('../modules/users/students.routes');
+const StudentRoutes = require('../modules/users/students.routes');
 const WeightingsRoutes = require('../modules/academic_record/weightings/weightings.routes');
 const TeacherGroupsRoutes = require('../modules/academic_record/teacher_groups/teacher_groups.routes');
 const SchedulesRoutes = require('../modules/academic_record/schedules/schedules.routes');
@@ -24,6 +24,7 @@ const CourseAverageRoutes = require('../modules/academic_record/course_average/c
 const GeneralAverageRoutes = require('../modules/academic_record/general_average/general_average.routes');
 const AnnouncementsRoutes = require('../modules/announcements/announcements.routes');
 const DashboardRoutes = require('../modules/dashboard/dashboard.routes');
+const RiskRoutes = require('../modules/ia/risk-prediction/narrative.routes');
 
 module.exports = {
     CoursesRoutes,
@@ -39,7 +40,7 @@ module.exports = {
     UsersRoutes,
     RegistrationsRoutes,
     ParentsRoutes,
-    StduentsRoutes,
+    StudentRoutes,
     WeightingsRoutes,
     TeacherGroupsRoutes,
     SchedulesRoutes,
@@ -50,5 +51,6 @@ module.exports = {
     GeneralAverageRoutes,
     AuthRoutes,
     AnnouncementsRoutes,
-    DashboardRoutes
+    DashboardRoutes,
+    RiskRoutes
 }
